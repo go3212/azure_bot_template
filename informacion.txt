@@ -1,0 +1,2 @@
+BotFramework-SDK
+https://github.com/microsoft/botframework-sdk

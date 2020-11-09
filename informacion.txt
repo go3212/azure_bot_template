@@ -1,2 +1,6 @@
+NODE.JS DOCUMENTACION
+https://nodejs.org/api/
+https://developer.mozilla.org/en-US/docs/Web/JavaScript
+
 BotFramework-SDK
 https://github.com/microsoft/botframework-sdk

@@ -1,8 +1,18 @@
+HTML
+https://developer.mozilla.org/es/docs/Learn/HTML/Introduccion_a_HTML
+
+JAVASCRIPT
+https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Introducci%C3%B3n
+
 NODE.JS DOCUMENTACION
 https://nodejs.org/api/
 https://developer.mozilla.org/en-US/docs/Web/JavaScript
 
+RESTIFY
+http://restify.com/
+
 BotFramework-SDK
+https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0&tabs=csharp
 https://github.com/microsoft/botframework-sdk
 https://github.com/Azure/azure-sdk-for-js
 https://github.com/Microsoft/botbuilder-js

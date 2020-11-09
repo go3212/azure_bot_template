@@ -15,7 +15,7 @@ Este reposositorio definira la estructura principal del bot. Se implementaran pr
 ## Repositorios de microsoft utilizados
 [Azure-SDK-for-js](https://github.com/Azure/azure-sdk-for-js)\
 [Botbuilder-js](https://github.com/Microsoft/botbuilder-js)\
-[Bot Framework Emulator](https://github.com/microsoft/BotFramework-Emulator)\
+[Bot Framework Emulator](https://github.com/microsoft/BotFramework-Emulator)
 
 ## Dependencias
 Node.js (linux, windows, mac)

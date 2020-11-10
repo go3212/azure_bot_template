@@ -1,26 +1,28 @@
 {
-    "name": "azure_bot_template",
-    "version": "1.0.0",
-    "description": "Demonstrate the core capabilities of the Microsoft Bot Framework",
-    "author": "Generated using Microsoft Bot Builder Yeoman generator v4.10.3",
-    "license": "MIT",
-    "main": "index.js",
-    "scripts": {
-        "start": "node ./index.js",
-        "watch": "nodemon ./index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com"
-    },
-    "dependencies": {
-        "botbuilder": "~4.10.3",
-        "dotenv": "^8.2.0",
-        "express": "^4.17.1",
-        "restify": "~8.5.1"
-    },
-    "devDependencies": {
-        "nodemon": "~2.0.4"
-    }
+  "name": "simple-node-chat-app",
+  "version": "1.0.0",
+  "description": "This is a simple chat app built with:",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "randomcolor": "^0.5.4",
+    "socket.io": "^2.3.0",
+    "uuid": "^7.0.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paolodelia99/Simple-node-chat-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paolodelia99/Simple-node-chat-app/issues"
+  },
+  "homepage": "https://github.com/paolodelia99/Simple-node-chat-app#readme"
 }

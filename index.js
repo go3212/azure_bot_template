@@ -47,7 +47,7 @@ var server = http.createServer((request, response) =>
 
 server.listen(3000, 'localhost', () =>
 {
-    console.log('Server started');
+    console.log('Servidor iniciado');
 });
 
 const io = require("socket.io")(server);
@@ -57,7 +57,9 @@ let connections = [];
 
 io.on('connection', (socket) =>
 {
-    console.log('New user connected');
+    //console.log(io.sockets);
+    //console.log(socket.id);
+    console.log('Nueva conexión');
     connections.push(socket);
     
     let color = randomColor();
@@ -79,10 +81,15 @@ io.on('connection', (socket) =>
         io.sockets.emit('get users', users);
     };
     
-    
     socket.on('new_message', (data) =>
     {
         io.sockets.emit('new_message', { message: data.message, username: socket.username, color: socket.color });
+    });
+
+    //listen on typing
+    socket.on('typing', data =>
+    {
+        socket.broadcast.emit('typing', { username: socket.username })
     });
 
     socket.on('disconnect', data =>

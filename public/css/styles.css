@@ -24,36 +24,18 @@ body
     place-items: center;
 }
 
-.users-list
-{
-    grid-area: header;
-    background: #0048AA;
-}
-
-.input-zone
-{
-    position: relative;
-    grid-area: text;
-    background-color: rgb(0, 0, 0);
-}
-
-.chatroom
-{
-    grid-area: server;
-}
-
 .container
 {
     margin: auto;
     display: grid;
-
-    grid-template-columns: 20% 30% 50%;
-    grid-template-rows: 10% 60% 30%;
+    
+    grid-template-columns: 30% 35% 35%;
+    grid-template-rows: 15% 75% 10%;
     grid-template-areas:
         "header header header"
         "people server local"
         "people text text";
-    justify-items: stretch;
+
     min-width: 800px;
     max-width: 1000px;
     max-height: 800px;
@@ -61,4 +43,34 @@ body
     height: 96vh;
     background: #FFF;
     border-radius: 10px;
+}
+
+.online
+{
+    grid-area: people;
+    background: #0048AA;
+}
+
+.modal
+{
+    grid-area: local;
+}
+
+.users-list
+{
+    display: grid;
+    grid-area: header;
+    background: #0048AA;
+}
+
+.input
+{
+    display: grid;
+    grid-area: text;
+    background: #000;
+}
+
+.chatroom
+{
+    grid-area: server;
 }

@@ -16,7 +16,7 @@ $(function ()
     // If send message btn is clicked
     send_message.click(function()
     {
-        socket.emit('new_message', { message : message.val() })
+        socket.emit('new_message', { message : message.val() });
     });
     // Or if the enter key is pressed
     message.keypress( e =>
@@ -24,14 +24,12 @@ $(function ()
         let keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13')
         {
-            socket.emit('new_message', {message : message.val()});
+            socket.emit('new_message', { message : message.val() });
         }
-    })
+    });
 
-    //Listen on new_message
-    socket.on("new_message", (data) =>
+    socket.on('new_message', (data) =>
     {
-
         feedback.html('');
         message.val('');
         //append the new message on the chatroom
@@ -42,8 +40,8 @@ $(function ()
                               <p class="chat-text" style="color: rgba(0,0,0,0.87)">${data.message}</p>
                             </div>
                         </div>
-                        `)
-        keepTheChatRoomToTheBottom()
+                        `);
+        keepTheChatRoomToTheBottom();
     });
 
     //Emit a username
@@ -60,8 +58,8 @@ $(function ()
                 {
                     html += `<li class="list-item" style="color: ${data[i].color}">${data[i].username}</li>`;
                 }
-                usersList.html(html)
-            })
+                usersList.html(html);
+            });
         }
     });
 
@@ -71,21 +69,15 @@ $(function ()
         let keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode != '13')
         {
-            socket.emit('typing')
+            socket.emit('typing');
         }
     });
 
     //Listen on typing
     socket.on('typing', (data) =>
     {
-        feedback.html("<p><i>" + data.username + " is typing a message..." + "</i></p>")
+        feedback.html("<p><i>" + data.username + " is typing a message..." + "</i></p>");
     });
-
-    //listen on typing
-    socket.on('typing', data =>
-    {
-        socket.broadcast.emit('typing', { username: socket.username })
-    })
 });
 
 // function thats keeps the chatbox stick to the bottom

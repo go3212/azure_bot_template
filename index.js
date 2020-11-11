@@ -45,7 +45,7 @@ var server = http.createServer((request, response) =>
     }
 });
 
-server.listen(3000, 'localhost', () =>
+server.listen(3000, '172.24.9.28', () =>
 {
     console.log('Servidor iniciado');
 });
@@ -57,7 +57,7 @@ let connections = [];
 
 io.on('connection', (socket) =>
 {
-    //console.log(io.sockets);
+    //console.log(io);
     //console.log(socket.id);
     console.log('Nueva conexión');
     connections.push(socket);
@@ -66,7 +66,7 @@ io.on('connection', (socket) =>
     
     socket.username = 'Anonymous';
     socket.color = color;
-    
+
     socket.on('change_username', data =>
     {
         let id = uuid.v4();

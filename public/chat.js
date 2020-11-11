@@ -1,7 +1,7 @@
 $(function () 
 {
     //make connection
-    var socket = io.connect('http://localhost:3000');
+    var socket = io.connect('http://85.51.217.6:3000');
 
     //buttons and inputs
     let message = $("#message");
@@ -12,13 +12,7 @@ $(function ()
     let nickName = $("#nickname-input");
 
     
-    //Emit message
-    // If send message btn is clicked
-    send_message.click(function()
-    {
-        socket.emit('new_message', { message : message.val() });
-    });
-    // Or if the enter key is pressed
+    // Emit new message
     message.keypress( e =>
     {
         let keycode = (e.keyCode ? e.keyCode : e.which);

@@ -1,7 +1,7 @@
 $(function () 
 {
     //make connection
-    var socket = io.connect('http://172.20.152.181:3000');
+    var socket = io.connect('http://localhost:3000');
 
     //buttons and inputs
     let message = $("#message");
@@ -11,6 +11,7 @@ $(function ()
     let usersList = $("#users-list");
     let nickName = $("#nickname-input");
 
+    
     //Emit message
     // If send message btn is clicked
     send_message.click(function()
@@ -23,13 +24,14 @@ $(function ()
         let keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13')
         {
-            socket.emit('new_message', {message : message.val()})
+            socket.emit('new_message', {message : message.val()});
         }
     })
 
     //Listen on new_message
     socket.on("new_message", (data) =>
     {
+
         feedback.html('');
         message.val('');
         //append the new message on the chatroom

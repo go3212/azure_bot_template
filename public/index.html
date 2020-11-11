@@ -11,65 +11,46 @@
 </head>
 
 <body>
-    <div id = "chat-container">>    
+    <div id = "chat-container" class = "container">>    
                 <!-- The Modal -->
         <div id="myModal" class="modal">
-
             <!-- Modal content -->
-            <div class="modal-content">
-                <h1 class="modal-title">What's your nickname?</h1>
+            <div id="modal-content" class="modal-content">
+                <h1 class="modal-title">Introduce tu nombre de usuario?</h1>
                 <input id="nickname-input" class="custom-input" type="text" />
             </div>
         </div>
 
-        <!--Big wrapper-->
-        <div class="big-wrapper">
-            <!-- Left Column-->
-            <div class="online-user-wrapper">
-                <div class="online-user-header-container">
-                    <header>
-                        <h2>Online Users</h2>
-                    </header>
-                </div>
-                <div>
-                    <!--Online users goes here-->
-                    <ul id="users-list">
-
-                    </ul>
-                </div>
-            </div>
-            <!--Chat Wrapper -->
-            <div class="chat-wrapper">
-                <div class="super-chat-title-container">
-                    <header>
-                        <h1>Chat</h1>
-                    </header>
-                </div>
-
-                <!--Messages container-->
-                <div id="chatroom">
-                    <!--x is typing goes here-->
-                    <div id="feedback"></div>
-                </div>
-
-                <!-- Input zone -->
-                <div id="input_zone">
-                    <input id="message" class="vertical-align custom-input" type="text" />
-                    <button id="send_message" class="vertical-align btn" type="button">Send</button>
-                </div>
-
-            </div>
+        <div class="online-user-header-container">
+            <header>
+                <h2>Online Users</h2>
+            </header>
         </div>
+
+        <div class = "users-list">
+            <ul id="users-list">
+            </ul>
+        </div>
+
+
+        <!--Messages container-->
+        <div id="chatroom" class = "chatroom">
+            <!--x is typing goes here-->
+            <div id="feedback"></div>
+        </div>
+
+        <!-- Input zone -->
+        <div id="input_zone" class = "input_zone">
+            <input id="message" class="vertical-align custom-input" type="text" />
+            <button id="send_message" class="vertical-align btn" type="button">Send</button>
+        </div>
+
         <!--jQuery script-->
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <!--Scripts-->
         <script src="./chat.js"></script>
         <script src="./modalScript.js"></script>
-</div>
-    <!--
-    <div id = "chat-container">>
     </div>
-    -->
 </body>
 
 </html>

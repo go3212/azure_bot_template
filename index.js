@@ -45,7 +45,7 @@ var server = http.createServer((request, response) =>
     }
 });
 
-server.listen(3000, '172.20.152.181', () =>
+server.listen(3000, 'localhost', () =>
 {
     console.log('Server started');
 });
@@ -61,10 +61,10 @@ io.on('connection', (socket) =>
     connections.push(socket);
     
     let color = randomColor();
-
+    
     socket.username = 'Anonymous';
     socket.color = color;
-
+    
     socket.on('change_username', data =>
     {
         let id = uuid.v4();
@@ -78,13 +78,14 @@ io.on('connection', (socket) =>
     {
         io.sockets.emit('get users', users);
     };
-
+    
+    
     socket.on('new_message', (data) =>
     {
         io.sockets.emit('new_message', { message: data.message, username: socket.username, color: socket.color });
     });
 
-    socket.on('disconmect', data =>
+    socket.on('disconnect', data =>
     {
         if (!socket.username) return;
 

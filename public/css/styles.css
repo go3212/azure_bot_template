@@ -62,8 +62,17 @@ body
 
 .chatroom
 {
+    
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column-reverse;
     grid-area: server;
     border-radius: 0 0 0 10px;
+}
+
+.chatroom div
+{
+    margin-left: 3px;
 }
 
 

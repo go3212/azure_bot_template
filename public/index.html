@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>bot_azure_template</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/styles.css">
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div id = "chat-container" class = "container">    
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div id="modal-content" class="modal-content">
+                <h1 class="modal-title">Introduce tu nombre de usuario?</h1>
+                <input id="nickname-input" class="custom-input" type="text" />
+            </div>
+        </div>
+
+        <div class="online">
+            <header id="online-users">
+                <h2>USUARIOS ONLINE</h2>
+            </header>
+        </div>
+
+        <div class = "users-list">
+            <ul id="users-list">
+            </ul>
+        </div>
+
+        <!--Messages container-->
+        <div id="chatroom" class = "chatroom">
+            <!--x is typing goes here-->
+            <div id="feedback"></div>
+        </div>
+
+        <!-- Input zone -->
+        <div id="input_zone" class = "input">
+            <input id="message" class="message" type="text" />
+        </div>
+
+        <!--jQuery script-->
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <!--Scripts-->
+        <script src="./chat.js"></script>
+        <script src="./modalScript.js"></script>
+    </div>
+</body>
+
+</html>

@@ -1,84 +1,186 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+var http = require('http');
+var fs = require('fs');
+var url = require('url');
+const uuid = require('uuid');
+let randomColor = require('randomcolor');
 
-const path = require('path');
+////////////////////////////////////////////////////////
+// INICIALIZAR SERVIDOR Y ENVIAR DATOS A LOS CLIENTES //
+////////////////////////////////////////////////////////
 
-const dotenv = require('dotenv');
-// Import required bot configuration.
-const ENV_FILE = path.join(__dirname, '.env');
-dotenv.config({ path: ENV_FILE });
+var server = http.createServer((request, response) =>
+{   
+    // Se separan las peticiones en distintos tipos:
 
-const restify = require('restify');
+    // El CSS
+    if(request.headers.accept.split(',')[0] == 'text/css')
+    {
+        //console.log(request.headers);
+        fs.readFile('./public/css/styles.css', (error, data) =>
+        {
+            response.writeHeader(200, { 'Content-Type': 'text/css' });
+            response.write(data);
+            response.end();
+        });
+    } 
+    // EL HTML
+    else 
+    {
+        fs.readFile('./public/index.html', (error, html) =>
+        {
+            if (error) throw error;
+            
+            response.writeHeader(200, { 'Content-Type': 'text/html' });
+            response.write(html);
+            response.end();
+        });
+    }
 
-// Import required bot services.
-// See https://aka.ms/bot-services to learn more about the different parts of a bot.
-const { BotFrameworkAdapter } = require('botbuilder');
+    // Aquí se envian los scripts necesarios para el funcionamiento correcto del HTML
+    var pathname = url.parse(request.url).pathname;
 
-// This bot's main dialog.
-const { EchoBot } = require('./bot');
+    if (pathname == '/chat.js' || pathname == '/modalScript.js') 
+    {
+        var file = fs.readFileSync("./public" + pathname);
+        response.write(file);
+        response.end()
+    }
 
-// Create HTTP server
-const server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, () => {
-    console.log(`\n${ server.name } listening to ${ server.url }`);
-    console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
-    console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
 });
 
-// Create adapter.
-// See https://aka.ms/about-bot-adapter to learn more about how bots work.
-const adapter = new BotFrameworkAdapter({
-    appId: process.env.MicrosoftAppId,
-    appPassword: process.env.MicrosoftAppPassword
+// Inicialización del servidor
+server.listen(4000, '192.168.1.60', () =>
+{
+    console.log('Servidor iniciado');
 });
 
-// Catch-all for errors.
-const onTurnErrorHandler = async (context, error) => {
-    // This check writes out errors to console log .vs. app insights.
-    // NOTE: In production environment, you should consider logging this to Azure
-    //       application insights.
-    console.error(`\n [onTurnError] unhandled error: ${ error }`);
+//////////////////////////////////
+//  LÓGICA DE LA BASE DE DATOS  //
+//////////////////////////////////
 
-    // Send a trace activity, which will be displayed in Bot Framework Emulator
-    await context.sendTraceActivity(
-        'OnTurnError Trace',
-        `${ error }`,
-        'https://www.botframework.com/schemas/error',
-        'TurnError'
-    );
+// Lógica de la base de datos, se crea un fichero de conversaciones diario.
+var file_extension = '.csv';
+var date = ((((new Date()) + '').split(' ').join('_')).split('_GMT', 1)[0]).slice(0,-9);
+var file_directory = __dirname + '/database/' + date + file_extension;
 
-    // Send a message to the user
-    await context.sendActivity('The bot encountered an error or bug.');
-    await context.sendActivity('To continue to run this bot, please fix the bot source code.');
-};
+fs.writeFile (file_directory, '', { flag: 'wx' }, (err) =>
+{
+    if (err) console.log(date + file_extension + " file exists");
+});
 
-// Set the onTurnError for the singleton BotFrameworkAdapter.
-adapter.onTurnError = onTurnErrorHandler;
 
-// Create the main dialog.
-const myBot = new EchoBot();
+/////////////////////////////////////////////////////////
+//  EVENTOS INPUT-OUTPUT, INTERACCÓN CLIENTE-SERVIDOR  //
+/////////////////////////////////////////////////////////
 
-// Listen for incoming requests.
-server.post('/api/messages', (req, res) => {
-    adapter.processActivity(req, res, async (context) => {
-        // Route to main dialog.
-        await myBot.run(context);
+const io = require ("socket.io")(server);
+
+let users = [];
+let connections = [];
+let user_addresses = {};
+
+io.on ('connection', (socket) =>
+{
+    console.log('Nueva conexión: ' + socket.handshake.address);
+    connections.push(socket);
+    
+    // Esta función actualiza los nombres de usuraio en los clientes (WIP)
+    const updateUsernames = () =>
+    {
+        return new Promise (resolve =>
+        {
+            setTimeout(() => resolve(io.sockets.emit('get users', users)), 0);
+        });
+    };
+    
+    /////////////////////////////////////
+    //   ENVIAR CHAT PREVIO A USUARIO  //
+    /////////////////////////////////////
+    let database = fs.createReadStream(file_directory, 'utf8');
+    database.on('data', (chunk) => 
+    {
+        // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
+        chunk = chunk.split('\n');
+        chunk.pop();
+        for (item in chunk)
+        {
+            item = chunk[item].split(',');
+            let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
+            socket.emit('chat-setup', data);
+        }
     });
+    
+    /////////////////////////////////////
+    //  LÓGICA DE GESTIÓN DE USUARIOS  //
+    /////////////////////////////////////
+    
+    // Aquí se "logean" los usuarios, se almacenan sus datos para que no se vuelva a pedir un username si se refresca la página
+    let user_ip = socket.handshake.address;
+    let user = user_addresses[user_ip];
+    
+    if (!(user_ip in user_addresses) || !user.logged)
+    {
+        socket.username = "Anonymous";
+        socket.color = randomColor();
+        socket.id = uuid.v4();
+
+        user_addresses[user_ip] = { uuid: socket.id, username: "Anonymous", color: socket.color, logged: false };
+        
+        socket.on ('change_username', data =>
+        {
+            socket.username = data.nickName;
+            socket.color = user_addresses[user_ip].color;
+            user_addresses[user_ip].username = data.nickName;
+            user_addresses[user_ip].logged = true;
+            users.push(user_addresses[user_ip].username);
+            updateUsernames();
+            socket.emit('logged');
+        });   
+    }
+    else if (user.logged)
+    {
+        socket.username = user.username;
+        socket.id = user.uuid;
+        socket.color = user.color;
+        users.push(user_addresses[user_ip].username);
+        socket.emit('logged');
+    }
+    
+    updateUsernames();
+    
+    // Se detecta la desconexión de algun usuario
+    socket.on ('disconnect', data =>
+    {
+        if (users.includes(socket.username)) 
+        {
+            users.splice(users.indexOf(socket.username), 1);
+        }
+        connections.splice(connections.indexOf(socket, 1));
+        updateUsernames();
+    });
+
+    ////////////////////////////////////////////
+    //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
+    ////////////////////////////////////////////
+
+    // Se remite a todos los clientes la información de los mensajes entrantes.
+    socket.on ('new_message', (data) =>
+    {
+        // Guardar las conversaciones en un archivo.
+        let information = socket.id + ',' + socket.username + ',' + socket.color + ',' + data.message;
+        fs.appendFile(file_directory, information + '\n', (err) =>
+        {
+            if (err) throw err;
+        });
+
+        io.sockets.emit('new_message', { message: data.message, username: socket.username, color: socket.color });
+    });
+
+    // Se remite si algún usuario escribe.
+    socket.on ('typing', data =>
+    {
+        socket.broadcast.emit('typing', { username: socket.username })
+    });
+
 });
 
-// Listen for Upgrade requests for Streaming.
-server.on('upgrade', (req, socket, head) => {
-    // Create an adapter scoped to this WebSocket connection to allow storing session data.
-    const streamingAdapter = new BotFrameworkAdapter({
-        appId: process.env.MicrosoftAppId,
-        appPassword: process.env.MicrosoftAppPassword
-    });
-    // Set onTurnError for the BotFrameworkAdapter created for each connection.
-    streamingAdapter.onTurnError = onTurnErrorHandler;
-
-    streamingAdapter.useWebSocket(req, socket, head, async (context) => {
-        // After connecting via WebSocket, run this logic for every request sent over
-        // the WebSocket connection.
-        await myBot.run(context);
-    });
-});

@@ -30,7 +30,7 @@ body
     margin: auto;
     display: grid;
     
-    grid-template-columns: 25% 40% 35%;
+    grid-template-columns: 25% 37.5% 37.5%;
     grid-template-rows: 10% 80% 10%;
     grid-template-areas:
         "header header header"
@@ -62,7 +62,6 @@ body
 
 .chatroom
 {
-    
     overflow-y: scroll;
     display: flex;
     flex-direction: column-reverse;

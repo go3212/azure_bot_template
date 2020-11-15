@@ -75,9 +75,9 @@ fs.writeFile (file_directory, '', { flag: 'wx' }, (err) =>
 
 const io = require ("socket.io")(server);
 
-let users = [];
-let connections = [];
-let user_addresses = {};
+var users = [];
+var connections = [];
+var user_addresses = {};
 
 io.on ('connection', (socket) =>
 {
@@ -92,6 +92,56 @@ io.on ('connection', (socket) =>
             setTimeout(() => resolve(io.sockets.emit('get users', users)), 0);
         });
     };
+    
+    
+    /////////////////////////////////////
+    //  LÓGICA DE GESTIÓN DE USUARIOS  //
+    /////////////////////////////////////
+    
+    // Aquí se "logean" los usuarios, se almacenan sus datos para que no se vuelva a pedir un username si se refresca la página
+    let user_ip = socket.handshake.address;
+    let user = user_addresses[user_ip];
+    
+    if (!(user_ip in user_addresses) || !user.logged)
+    {
+        socket.username = "Anonymous";
+        socket.color = randomColor();
+        socket.uuid = uuid.v4();
+        
+        user_addresses[user_ip] = { uuid: socket.uuid, username: "Anonymous", color: socket.color, logged: false };
+        
+        socket.on ('change_username', data =>
+        {
+            socket.username = data.nickName;
+            socket.color = user_addresses[user_ip].color;
+            user_addresses[user_ip].username = data.nickName;
+            user_addresses[user_ip].logged = true;
+            users.push(user_addresses[user_ip].username);
+            updateUsernames();
+            socket.emit('logged');
+        });   
+    }
+    else if (user.logged)
+    {
+        socket.username = user.username;
+        socket.uuid = user.uuid;
+        socket.color = user.color;
+        users.push(user_addresses[user_ip].username);
+        socket.emit('logged');
+    }
+    
+    updateUsernames();
+    
+    // Se detecta la desconexión de algun usuario
+    socket.on ('disconnect', data =>
+    {
+        if (users.includes(socket.username)) 
+        {
+            users.splice(users.indexOf(socket.username), 1);
+        }
+        connections.splice(connections.indexOf(socket, 1));
+        updateUsernames();
+    });
     
     /////////////////////////////////////
     //   ENVIAR CHAT PREVIO A USUARIO  //
@@ -110,77 +160,30 @@ io.on ('connection', (socket) =>
         }
     });
     
-    /////////////////////////////////////
-    //  LÓGICA DE GESTIÓN DE USUARIOS  //
-    /////////////////////////////////////
-    
-    // Aquí se "logean" los usuarios, se almacenan sus datos para que no se vuelva a pedir un username si se refresca la página
-    let user_ip = socket.handshake.address;
-    let user = user_addresses[user_ip];
-    
-    if (!(user_ip in user_addresses) || !user.logged)
-    {
-        socket.username = "Anonymous";
-        socket.color = randomColor();
-        socket.id = uuid.v4();
-
-        user_addresses[user_ip] = { uuid: socket.id, username: "Anonymous", color: socket.color, logged: false };
-        
-        socket.on ('change_username', data =>
-        {
-            socket.username = data.nickName;
-            socket.color = user_addresses[user_ip].color;
-            user_addresses[user_ip].username = data.nickName;
-            user_addresses[user_ip].logged = true;
-            users.push(user_addresses[user_ip].username);
-            updateUsernames();
-            socket.emit('logged');
-        });   
-    }
-    else if (user.logged)
-    {
-        socket.username = user.username;
-        socket.id = user.uuid;
-        socket.color = user.color;
-        users.push(user_addresses[user_ip].username);
-        socket.emit('logged');
-    }
-    
-    updateUsernames();
-    
-    // Se detecta la desconexión de algun usuario
-    socket.on ('disconnect', data =>
-    {
-        if (users.includes(socket.username)) 
-        {
-            users.splice(users.indexOf(socket.username), 1);
-        }
-        connections.splice(connections.indexOf(socket, 1));
-        updateUsernames();
-    });
-
     ////////////////////////////////////////////
     //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
     ////////////////////////////////////////////
-
+    socket.on ('request_data', () => { socket.emit ('request_data', user_addresses[socket.handshake.address]); });
+    
     // Se remite a todos los clientes la información de los mensajes entrantes.
     socket.on ('new_message', (data) =>
     {
         // Guardar las conversaciones en un archivo.
-        let information = socket.id + ',' + socket.username + ',' + socket.color + ',' + data.message;
+        let information = data.uuid + ',' + data.username + ',' + data.color + ',' + data.message;
         fs.appendFile(file_directory, information + '\n', (err) =>
         {
             if (err) throw err;
         });
-
-        io.sockets.emit('new_message', { message: data.message, username: socket.username, color: socket.color });
+        
+        socket.broadcast.emit ('server_new_message', data);
+        //socket.emit ('client_new_message', data) 
     });
-
+    
     // Se remite si algún usuario escribe.
     socket.on ('typing', data =>
     {
         socket.broadcast.emit('typing', { username: socket.username })
     });
-
+    
 });
 

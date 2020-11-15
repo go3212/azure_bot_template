@@ -75,9 +75,9 @@ fs.writeFile (file_directory, '', { flag: 'wx' }, (err) =>
 
 const io = require ("socket.io")(server);
 
-let users = [];
-let connections = [];
-let user_addresses = {};
+var users = [];
+var connections = [];
+var user_addresses = {};
 
 io.on ('connection', (socket) =>
 {
@@ -93,22 +93,6 @@ io.on ('connection', (socket) =>
         });
     };
     
-    /////////////////////////////////////
-    //   ENVIAR CHAT PREVIO A USUARIO  //
-    /////////////////////////////////////
-    let database = fs.createReadStream(file_directory, 'utf8');
-    database.on('data', (chunk) => 
-    {
-        // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
-        chunk = chunk.split('\n');
-        chunk.pop();
-        for (item in chunk)
-        {
-            item = chunk[item].split(',');
-            let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
-            socket.emit('chat-setup', data);
-        }
-    });
     
     /////////////////////////////////////
     //  LÓGICA DE GESTIÓN DE USUARIOS  //
@@ -122,9 +106,9 @@ io.on ('connection', (socket) =>
     {
         socket.username = "Anonymous";
         socket.color = randomColor();
-        socket.id = uuid.v4();
-
-        user_addresses[user_ip] = { uuid: socket.id, username: "Anonymous", color: socket.color, logged: false };
+        socket.uuid = uuid.v4();
+        
+        user_addresses[user_ip] = { uuid: socket.uuid, username: "Anonymous", color: socket.color, logged: false };
         
         socket.on ('change_username', data =>
         {
@@ -140,7 +124,7 @@ io.on ('connection', (socket) =>
     else if (user.logged)
     {
         socket.username = user.username;
-        socket.id = user.uuid;
+        socket.uuid = user.uuid;
         socket.color = user.color;
         users.push(user_addresses[user_ip].username);
         socket.emit('logged');
@@ -158,29 +142,51 @@ io.on ('connection', (socket) =>
         connections.splice(connections.indexOf(socket, 1));
         updateUsernames();
     });
-
+    
+    
     ////////////////////////////////////////////
     //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
     ////////////////////////////////////////////
-
+    socket.on ('request_data', () => { socket.emit ('request_data', user_addresses[socket.handshake.address]); });
+    
     // Se remite a todos los clientes la información de los mensajes entrantes.
     socket.on ('new_message', (data) =>
     {
         // Guardar las conversaciones en un archivo.
-        let information = socket.id + ',' + socket.username + ',' + socket.color + ',' + data.message;
+        let information = data.uuid + ',' + data.username + ',' + data.color + ',' + data.message;
         fs.appendFile(file_directory, information + '\n', (err) =>
         {
             if (err) throw err;
         });
-
-        io.sockets.emit('new_message', { message: data.message, username: socket.username, color: socket.color });
+        
+        socket.broadcast.emit ('server_new_message', data);
+        socket.emit ('client_new_message', data) 
     });
-
+    
     // Se remite si algún usuario escribe.
     socket.on ('typing', data =>
     {
         socket.broadcast.emit('typing', { username: socket.username })
     });
-
+    
+    /////////////////////////////////////
+    //   ENVIAR CHAT PREVIO A USUARIO  //
+    /////////////////////////////////////
+    socket.on ('request_chat_story', () =>
+    {
+        let database = fs.createReadStream(file_directory, 'utf8');
+        database.on('data', (chunk) => 
+        {
+            // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
+            chunk = chunk.split('\n');
+            chunk.pop();
+            for (item in chunk)
+            {
+                item = chunk[item].split(',');
+                let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
+                socket.emit('chat-setup', data);
+            }
+        });
+    });
 });
 

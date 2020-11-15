@@ -1,7 +1,7 @@
 $(function () 
 {
     // CONEXION CON EL SERVIDOR, ENVIA SOCKET (identificador)
-    var socket = io.connect('http://85.51.217.6:4000');
+    var socket = io.connect('http://localhost:4000');
     
     // POSIBLES INPUTS Y OUTPUTS EN EL HTML
     let message = $("#message");

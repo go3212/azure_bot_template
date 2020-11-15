@@ -49,7 +49,7 @@ var server = http.createServer((request, response) =>
 });
 
 // Inicialización del servidor
-server.listen(4000, '192.168.1.60', () =>
+server.listen(4000, 'localhost', () =>
 {
     console.log('Servidor iniciado');
 });

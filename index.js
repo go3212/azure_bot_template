@@ -160,7 +160,7 @@ io.on ('connection', (socket) =>
         });
         
         socket.broadcast.emit ('server_new_message', data);
-        //socket.emit ('client_new_message', data) 
+        socket.emit ('client_new_message', data) 
     });
     
     // Se remite si algún usuario escribe.

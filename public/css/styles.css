@@ -56,12 +56,21 @@ body
 
 .modal
 {
-    grid-area: local;
+    position: relative;
+    grid-area: header;
 }
 
+.empty_div
+{
+    visibility: hidden;
+    background-color: black;
+    width: 100%;
+    line-height: normal;
+}
 
 .chatroom
 {
+    font-size: 25px;
     overflow-y: scroll;
     display: flex;
     flex-direction: column-reverse;
@@ -77,14 +86,49 @@ body
             "server client";
     
 }
-#client_chat {
-    grid-area: client;
-    position: relative;
-    
+
+.user-nickname
+{
+    box-sizing: border-box;
+    font-style: italic;
 }
-#server_chat {
+
+#client_chat 
+{
+    line-height: normal;
+    text-align: right;
+    padding-right: 20px;
+
+    position: right;
+    grid-area: client;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#server_chat 
+{
+    line-height: normal;
+    text-align: left;
+    padding-left: 10px;
+
+
+    position: left;
     grid-area: server;
-    position: relative;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    
+    display: flex;
+    flex-direction: column-reverse;
+   
 }
 
 .input
@@ -110,6 +154,11 @@ body
         ". textbox ."
         ". . .";
 
+}
+
+input[type="text"]
+{
+    font-size:15px;
 }
 
 .message

@@ -18,6 +18,7 @@ $(function ()
     let nickName = $("#nickname-input");
     let client_chat = $("#client_chat");
     let server_chat = $("#server_chat");
+    let data_requested = false;
 
     ///////////////////////////////////////////////////////
     //  LÓGICA DE RECEPCIÓN DE DATOS INICIALES           //
@@ -26,18 +27,23 @@ $(function ()
     socket.on ('request_data', (data) => 
     { 
         client = data;
-        socket.emit ('request_chat_story');
+        if (!data_requested) socket.emit ('request_chat_story');
+        data_requested =true;
     });
 
     socket.on ('chat-setup', (data) =>
     {
-        if (data.uuid != client.uuid) append_text (server_chat, data);
+        if (data.uuid != client.uuid) 
+        {
+            append_text (server_chat, data);
+            empty_line (client_chat, 2);
+        }
         else 
         {
             append_text (client_chat, data);
-            server_chat.prepend (`<div></div>`);
+            empty_line (server_chat, 2);
         }
-        //keepTheChatRoomToTheBottom ();
+        keepTheChatRoomToTheBottom ();
     });
     
     // Esto esta work-in-progress
@@ -73,7 +79,6 @@ $(function ()
                 message.val ('');
                 
                 append_text (client_chat, Object.assign(client, {message: data}));
-                server_chat.prepend (`<div></div>`);
                 socket.emit('new_message', Object.assign(client, {message: data}));
             }
         });
@@ -96,17 +101,17 @@ $(function ()
     // Cuando se recibe un mensaje de otro usuario 
     socket.on ('server_new_message', (data) =>
     {
-        feedback.html ('');
-        message.val ('');
         // Poner el mensaje en la sala de chat
         append_text (server_chat, data);
-        //keepTheChatRoomToTheBottom ();
+        empty_line (client_chat, 2);
+        keepTheChatRoomToTheBottom ();
     });
     
     // Cuando el cliente envia un mensaje.
     socket.on ('client_new_message', (data) =>
     {
-        //server_chat.prepend (`<div></div>`);
+        empty_line (server_chat, 2);
+        keepTheChatRoomToTheBottom ();          
     });
 
     // Si un usuario escribe mostrarlo
@@ -135,8 +140,7 @@ const keepTheChatRoomToTheBottom = () =>
     $("#chatroom").scrollTop($("#chatroom")[0].scrollHeight); // =  chatroom.scrollHeight - chatroom.clientHeight;
 }
 
-// Funcion para implementar elementos en chatbox
-
+// Funciones para implementar elementos en chatbox
 function append_text (element, data)
 {
     element.prepend (`
@@ -148,6 +152,14 @@ function append_text (element, data)
                     </div>
                     `);
 };
+
+function empty_line (element, n)
+{
+    for (let i = 1; i <= n; ++i)
+    {
+        element.prepend (`<div class="empty_div"> space </div>`);
+    }
+}
 
 
 //////////////////

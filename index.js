@@ -143,22 +143,6 @@ io.on ('connection', (socket) =>
         updateUsernames();
     });
     
-    /////////////////////////////////////
-    //   ENVIAR CHAT PREVIO A USUARIO  //
-    /////////////////////////////////////
-    let database = fs.createReadStream(file_directory, 'utf8');
-    database.on('data', (chunk) => 
-    {
-        // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
-        chunk = chunk.split('\n');
-        chunk.pop();
-        for (item in chunk)
-        {
-            item = chunk[item].split(',');
-            let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
-            socket.emit('chat-setup', data);
-        }
-    });
     
     ////////////////////////////////////////////
     //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
@@ -185,5 +169,24 @@ io.on ('connection', (socket) =>
         socket.broadcast.emit('typing', { username: socket.username })
     });
     
+    /////////////////////////////////////
+    //   ENVIAR CHAT PREVIO A USUARIO  //
+    /////////////////////////////////////
+    socket.on ('request_chat_story', () =>
+    {
+        let database = fs.createReadStream(file_directory, 'utf8');
+        database.on('data', (chunk) => 
+        {
+            // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
+            chunk = chunk.split('\n');
+            chunk.pop();
+            for (item in chunk)
+            {
+                item = chunk[item].split(',');
+                let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
+                socket.emit('chat-setup', data);
+            }
+        });
+    });
 });
 

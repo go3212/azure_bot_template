@@ -23,7 +23,11 @@ $(function ()
     //  LÓGICA DE RECEPCIÓN DE DATOS INICIALES           //
     ///////////////////////////////////////////////////////
     
-    socket.on ('request_data', (data) => { client = data });
+    socket.on ('request_data', (data) => 
+    { 
+        client = data;
+        socket.emit ('request_chat_story');
+    });
 
     socket.on ('chat-setup', (data) =>
     {
@@ -60,15 +64,16 @@ $(function ()
         modal.style.display = "none";
         // Emitir mensajes al servidor
         message.keypress( e =>
-        {   
-            let data = message.val();
-
-            append_text (client_chat, data);
-            server_chat.prepend (`<div></div>`);
-
+        {  
             let keycode = (e.keyCode ? e.keyCode : e.which);
             if(keycode == '13')
             {
+                let data = message.val();
+                feedback.html ('');
+                message.val ('');
+                
+                append_text (client_chat, Object.assign(client, {message: data}));
+                server_chat.prepend (`<div></div>`);
                 socket.emit('new_message', Object.assign(client, {message: data}));
             }
         });

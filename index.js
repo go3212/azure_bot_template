@@ -59,15 +59,27 @@ server.listen(4000, '192.168.1.60', () =>
 //////////////////////////////////
 
 // Lógica de la base de datos, se crea un fichero de conversaciones diario.
-var file_extension = '.csv';
+var chat_database_file_extension = '.csv';
 var date = ((((new Date()) + '').split(' ').join('_')).split('_GMT', 1)[0]).slice(0,-9);
-var file_directory = __dirname + '/database/' + date + file_extension;
+var chat_database_file = __dirname + '/database/' + date + chat_database_file_extension;
 
-fs.writeFile (file_directory, '', { flag: 'wx' }, (err) =>
+fs.writeFile (chat_database_file, '', { flag: 'wx' }, (err) =>
 {
-    if (err) console.log(date + file_extension + " file exists");
+    if (err) console.log(date + chat_database_file_extension + " file exists");
 });
 
+//////////////////////////////////
+//  CARGA DE DATOS DE USUARIOS  //
+//////////////////////////////////
+var users_database_file_name = 'users';
+var users_database_file_extension = '.json';
+var users_database_file = __dirname + '/database/' + users_database_file_name + users_database_file_extension;
+
+var user_addresses = {};
+fs.readFile (users_database_file, 'utf8', (err, data)=>
+{
+    user_addresses = JSON.parse(data);
+});
 
 /////////////////////////////////////////////////////////
 //  EVENTOS INPUT-OUTPUT, INTERACCÓN CLIENTE-SERVIDOR  //
@@ -75,14 +87,15 @@ fs.writeFile (file_directory, '', { flag: 'wx' }, (err) =>
 
 const io = require ("socket.io")(server);
 
+// Información volátil sobre los usuarios.
 var users = [];
 var connections = [];
-var user_addresses = {};
 
 io.on ('connection', (socket) =>
 {
     console.log('Nueva conexión: ' + socket.handshake.address);
     connections.push(socket);
+    console.log(user_addresses);
     
     // Esta función actualiza los nombres de usuraio en los clientes (WIP)
     const updateUsernames = () =>
@@ -92,7 +105,6 @@ io.on ('connection', (socket) =>
             setTimeout(() => resolve(io.sockets.emit('get users', users)), 0);
         });
     };
-    
     
     /////////////////////////////////////
     //  LÓGICA DE GESTIÓN DE USUARIOS  //
@@ -109,7 +121,7 @@ io.on ('connection', (socket) =>
         socket.uuid = uuid.v4();
         
         user_addresses[user_ip] = { uuid: socket.uuid, username: "Anonymous", color: socket.color, logged: false };
-        
+
         socket.on ('change_username', data =>
         {
             socket.username = data.nickName;
@@ -119,6 +131,23 @@ io.on ('connection', (socket) =>
             users.push(user_addresses[user_ip].username);
             updateUsernames();
             socket.emit('logged');
+
+            fs.readFile (users_database_file, 'utf8', (err, json_data) =>
+            {
+                if (err) throw err;
+                else 
+                {
+                    let user_info = {};
+                    user_info[user_ip] = user_addresses[user_ip];
+
+                    let jsonfile = JSON.parse(json_data);
+                    Object.assign (jsonfile, user_info);
+                    fs.writeFile (users_database_file, JSON.stringify(jsonfile, null, 4), (err) =>
+                    {
+                        if (err) throw err;
+                    });
+                }
+            });
         });   
     }
     else if (user.logged)
@@ -154,7 +183,7 @@ io.on ('connection', (socket) =>
     {
         // Guardar las conversaciones en un archivo.
         let information = data.uuid + ',' + data.username + ',' + data.color + ',' + data.message;
-        fs.appendFile(file_directory, information + '\n', (err) =>
+        fs.appendFile(chat_database_file, information + '\n', (err) =>
         {
             if (err) throw err;
         });
@@ -174,7 +203,7 @@ io.on ('connection', (socket) =>
     /////////////////////////////////////
     socket.on ('request_chat_story', () =>
     {
-        let database = fs.createReadStream(file_directory, 'utf8');
+        let database = fs.createReadStream (chat_database_file, 'utf8');
         database.on('data', (chunk) => 
         {
             // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
@@ -183,10 +212,16 @@ io.on ('connection', (socket) =>
             for (item in chunk)
             {
                 item = chunk[item].split(',');
+
+                let message = [];
+                for (let i = 3; i <= item.length - 1; ++i) 
+                {
+                    message.push(item[i]);
+                }
+                item[3] = message.join(',');
                 let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
                 socket.emit('chat-setup', data);
             }
         });
     });
 });
-

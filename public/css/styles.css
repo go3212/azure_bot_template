@@ -60,13 +60,6 @@ body
     grid-area: header;
 }
 
-.empty_div
-{
-    visibility: hidden;
-    background-color: black;
-    width: 100%;
-    line-height: normal;
-}
 
 .chatroom
 {
@@ -76,14 +69,14 @@ body
     flex-direction: column-reverse;
     grid-area: server;
     border-radius: 0 0 0 10px;
-
+    
     position: relative;
     grid-area: chat;
     display: grid;
-
+    
     grid-template-columns:50% 50%;
     grid-template-areas:
-            "server client";
+    "server client";
     
 }
 
@@ -98,7 +91,7 @@ body
     line-height: normal;
     text-align: right;
     padding-right: 20px;
-
+    
     position: right;
     grid-area: client;
     min-width: 100%;
@@ -106,7 +99,7 @@ body
     max-height: 100%;
     width: 100%;
     height: 100%;
-
+    
     display: flex;
     flex-direction: column-reverse;
 }
@@ -116,8 +109,8 @@ body
     line-height: normal;
     text-align: left;
     padding-left: 10px;
-
-
+    
+    
     position: left;
     grid-area: server;
     min-width: 100%;
@@ -128,7 +121,15 @@ body
     
     display: flex;
     flex-direction: column-reverse;
-   
+    
+}
+
+.empty_div
+{
+    visibility: hidden;
+    background-color: black;
+    width: 100%;
+    line-height: normal;
 }
 
 .input
@@ -136,14 +137,14 @@ body
     position: relative;
     grid-area: text;
     margin: auto;
-
+    
     min-width: 100%;
     max-width: 100%;
     max-height: 100%;
     width: 100%;
     height: 100%;
     border-radius: 0 0 10px 0;
-    background: rgb(11, 51, 230);
+    background: rgb(223, 223, 223);
     border-top: 1px solid #000;
 
     display: grid;

@@ -161,7 +161,6 @@ function empty_line (element, n)
     }
 }
 
-
 //////////////////
 //  CHEATSHEET  //
 //////////////////

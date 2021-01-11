@@ -2,12 +2,14 @@
 //  DECLARACION DE VARIABLES GLOBALES  //
 /////////////////////////////////////////
 var chatroom = $("#chatroom");
+var uuid = get_uuid();
 var client = undefined;
 
 $(function () 
 {
-    // CONEXION CON EL SERVIDOR, ENVIA SOCKET (identificador)
+    // CONEXION CON EL SERVIDOR, ENVIA SOCKET (identificador) y uuid
     var socket = io.connect('http://85.51.217.6:4000');
+    socket.emit('first-connection', uuid);
     socket.emit('request_data');
 
     // POSIBLES INPUTS Y OUTPUTS EN EL HTML
@@ -27,8 +29,9 @@ $(function ()
     socket.on ('request_data', (data) => 
     { 
         client = data;
+        client.uuid = uuid['uuid'];
         if (!data_requested) socket.emit ('request_chat_story');
-        data_requested =true;
+        data_requested = true;
     });
 
     socket.on ('chat-setup', (data) =>
@@ -153,6 +156,20 @@ function append_text (element, data)
                     `);
 };
 
+
+// Function to get uuid.
+function get_uuid ()
+{
+    let uuid = document.cookie;
+    uuid = uuid.split('=');
+    uuid[0] = '"' + uuid[0] + '"';
+    uuid[1] = '"' + uuid[1] + '"';
+    uuid = uuid.join(':');
+    uuid = JSON.parse("{" + uuid + "}");
+    return uuid;
+}
+
+
 function empty_line (element, n)
 {
     for (let i = 1; i <= n; ++i)
@@ -160,7 +177,6 @@ function empty_line (element, n)
         element.prepend (`<div class="empty_div"> space </div>`);
     }
 }
-
 
 //////////////////
 //  CHEATSHEET  //

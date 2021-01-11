@@ -9,7 +9,7 @@ $(function ()
 {
     // CONEXION CON EL SERVIDOR, ENVIA SOCKET (identificador) y uuid
     var socket = io.connect('http://85.51.217.6:4000');
-    socket.emit('client-uuid', uuid);
+    socket.emit('first-connection', uuid);
     socket.emit('request_data');
 
     // POSIBLES INPUTS Y OUTPUTS EN EL HTML
@@ -28,6 +28,8 @@ $(function ()
     
     socket.on ('request_data', (data) => 
     { 
+        client = data;
+        client.uuid = uuid['uuid'];
         if (!data_requested) socket.emit ('request_chat_story');
         data_requested = true;
     });

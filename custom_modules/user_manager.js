@@ -47,15 +47,11 @@ class Manager
     constructor(location)
     {
         usersfile = location;
-        this.onlineUsers = {};
+        this.onlineUsers = new Map();
         this.allTimeUsers = new Map();
 
         // Gather all time users
         this.gatherAllTimeUsers();
-
-        // Gather online users
-        
-        
     };
 
     // Mirar de mejorar.
@@ -74,7 +70,7 @@ class Manager
         .then(() => {
             for (let [key, value] of Object.entries(users))
             {   
-                let userdata = {nickname: value.username, color: value.color}
+                let userdata = {username: value.username, color: value.color}
                 this.allTimeUsers.set(key, userdata);
             }
         }, () => {
@@ -82,18 +78,23 @@ class Manager
         });
     };
 
-    handleUser (uuid)
+    connectUser (uuid)
     {
         // Si existe el usuario -> meterlo a online
         if (this.allTimeUsers.get(uuid) != undefined)
         {
-            this.onlineUsers[uuid] = true;
+            this.onlineUsers.set(uuid, this.allTimeUsers.get(uuid));
         }  
         else
         {
             this.allTimeUsers.set(uuid, {username: "Anonymous", color: "#1906cc"});
             this.#insertUserToDatabase(uuid);
         };
+    }
+
+    disconnectUser (uuid)
+    {
+        this.onlineUsers.delete(uuid);
     }
 
     updateOnlineUsers(data)

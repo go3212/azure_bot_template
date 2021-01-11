@@ -91,107 +91,38 @@ let manager = new Manager (users_database_file);
 
 const io = require ("socket.io")(server);
 
-
-// Información volátil sobre los usuarios.
-var users = [];
-var connections = [];
-
 io.on ('connection', (socket) =>
 {
     console.log('Nueva conexión: ' + socket.handshake.address);
-    connections.push(socket);
 
-    socket.on('client-uuid', (data) => 
-    {
-        //console.log(uuid);
-        manager.handleUser(data['uuid']);
-        console.log(manager.allTimeUsers);
-    });
-
-    // Esta función actualiza los nombres de usuraio en los clientes (WIP)
-    const updateUsernames = () =>
-    {
-        return new Promise (resolve =>
-        {
-            setTimeout(() => resolve(io.sockets.emit('get users', users)), 0);
-        });
-    };
-    
-
-    /*
     /////////////////////////////////////
     //  LÓGICA DE GESTIÓN DE USUARIOS  //
     /////////////////////////////////////
-    
-    // Aquí se "logean" los usuarios, se almacenan sus datos para que no se vuelva a pedir un username si se refresca la página
-    let user_ip = socket.handshake.address;
-
-    ///////////////////////////////
-    let user = user_addresses[user_ip];
-    
-    if (!(user_ip in user_addresses) || !user.logged)
+    socket.on('first-connection', (data) => 
     {
-        socket.username = "Anonymous";
-        socket.color = randomColor();
-        socket.uuid = uuid.v4();
-        
-        user_addresses[user_ip] = { uuid: socket.uuid, username: "Anonymous", color: socket.color, logged: false };
-
-        socket.on ('change_username', data =>
-        {
-            socket.username = data.nickName;
-            socket.color = user_addresses[user_ip].color;
-            user_addresses[user_ip].username = data.nickName;
-            user_addresses[user_ip].logged = true;
-            users.push(user_addresses[user_ip].username);
-            updateUsernames();
-            socket.emit('logged');
-
-            fs.readFile (users_database_file, 'utf8', (err, json_data) =>
-            {
-                if (err) throw err;
-                else 
-                {
-                    let user_info = {};
-                    user_info[user_ip] = user_addresses[user_ip];
-
-                    let jsonfile = JSON.parse(json_data);
-                    Object.assign (jsonfile, user_info);
-                    fs.writeFile (users_database_file, JSON.stringify(jsonfile, null, 4), (err) =>
-                    {
-                        if (err) throw err;
-                    });
-                }
-            });
-        });   
-    }
-    else if (user.logged)
-    {
-        socket.username = user.username;
-        socket.uuid = user.uuid;
-        socket.color = user.color;
-        users.push(user_addresses[user_ip].username);
+        //console.log(uuid);
+        socket.uuid = data['uuid'];
+        manager.connectUser(socket.uuid);
+        console.log(manager.onlineUsers);
         socket.emit('logged');
-    }
-    
-    updateUsernames();
+
+        updateUsernames();
+    });
+
     // Se detecta la desconexión de algun usuario
-    socket.on ('disconnect', data =>
+    socket.on ('disconnect', (data) =>
     {
-        if (users.includes(socket.username)) 
-        {
-            users.splice(users.indexOf(socket.username), 1);
-        }
-        connections.splice(connections.indexOf(socket, 1));
+        manager.disconnectUser(socket.uuid);
+        
         updateUsernames();
     });
     
-    
+    //updateUsernames();
 
     ////////////////////////////////////////////
     //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
     ////////////////////////////////////////////
-    socket.on ('request_data', () => { socket.emit ('request_data', user_addresses[socket.handshake.address]); });
+    socket.on ('request_data', () => { socket.emit ('request_data', manager.onlineUsers.get(socket.uuid)); });
     
     // Se remite a todos los clientes la información de los mensajes entrantes.
     socket.on ('new_message', (data) =>
@@ -207,12 +138,12 @@ io.on ('connection', (socket) =>
         socket.emit ('client_new_message', data) 
     });
     
-    // Se remite si algún usuario escribe.
+    /* Se remite si algún usuario escribe.
     socket.on ('typing', data =>
     {
-        socket.broadcast.emit('typing', { username: socket.username })
+        socket.broadcast.emit('typing', { username: manager.onlineUsers.get(socket.uuid)['username'] })
     });
-    
+    */
     /////////////////////////////////////
     //   ENVIAR CHAT PREVIO A USUARIO  //
     /////////////////////////////////////
@@ -239,7 +170,6 @@ io.on ('connection', (socket) =>
             }
         });
     });
-    */
 });
 
 function parseCookies (request) {
@@ -253,3 +183,23 @@ function parseCookies (request) {
 
     return list;
 }
+
+// Esta función actualiza los nombres de usuraio en los clientes (WIP)
+const updateUsernames = () =>
+{
+    let users = [];
+    i = 0;
+    manager.onlineUsers.forEach((value, key, map) => 
+    {
+        users[i] = value.username;
+        i += 1;
+    });
+    console.log(users);
+
+    
+    
+    return new Promise (resolve =>
+    {
+        setTimeout(() => resolve(io.sockets.emit('get users', users)), 0);
+    });
+};

@@ -1,14 +1,19 @@
 {
-    "85.51.217.6": {
-        "uuid": "6a884e81-32c3-4160-a0ee-b2f5cbbd590f",
+    "6a884e81-32c3-4160-a0ee-b2f5cbbd590f": {
+        "ip": "85.51.217.6",
         "username": "Fernando",
         "color": "#1906cc",
         "logged": true
     },
-    "88.16.69.4": {
-        "uuid": "0d65925f-80ea-4333-9c75-09156ff692b4",
+    "0d65925f-80ea-4333-9c75-09156ff692b4": {
+        "ip": "88.16.69.4",
         "username": "Manel",
         "color": "#96f7c7",
         "logged": true
+    },
+    "dwad-e4d4-3d-828e-8ecbf3a2d3": {},
+    "dwad-e4d4-3d-828e-8ecbf3a45d3": {
+        "username": "Anonymous",
+        "color": "#1906cc"
     }
 }

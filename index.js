@@ -1,8 +1,10 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
-const uuid = require('uuid');
+const uuid_gen = require('uuid');
 let randomColor = require('randomcolor');
+let Manager = require('./custom_modules/user_manager.js')
+
 
 ////////////////////////////////////////////////////////
 // INICIALIZAR SERVIDOR Y ENVIAR DATOS A LOS CLIENTES //
@@ -11,6 +13,7 @@ let randomColor = require('randomcolor');
 var server = http.createServer((request, response) =>
 {   
     // Se separan las peticiones en distintos tipos:
+    var pathname = url.parse(request.url).pathname;
 
     // El CSS
     if(request.headers.accept.split(',')[0] == 'text/css')
@@ -23,6 +26,13 @@ var server = http.createServer((request, response) =>
             response.end();
         });
     } 
+    // Aquí se envian los scripts necesarios para el funcionamiento correcto del HTML
+    else if (pathname == '/chat.js' || pathname == '/modalScript.js') 
+    {
+        var file = fs.readFileSync("./public" + pathname);
+        response.write(file);
+        response.end()
+    }
     // EL HTML
     else 
     {
@@ -30,21 +40,19 @@ var server = http.createServer((request, response) =>
         {
             if (error) throw error;
             
+            response.setHeader('Content-Type', 'text/html');
+            
+            var cookies = parseCookies(request);
+            if (cookies['uuid'] == undefined)
+            {
+                response.setHeader('Set-Cookie', 'uuid='+(uuid_gen.v4()).toString() + ';expires=Fri, 31 Dec 9999 23:59:59 GMT');
+            }
             response.writeHeader(200, { 'Content-Type': 'text/html' });
             response.write(html);
             response.end();
         });
     }
 
-    // Aquí se envian los scripts necesarios para el funcionamiento correcto del HTML
-    var pathname = url.parse(request.url).pathname;
-
-    if (pathname == '/chat.js' || pathname == '/modalScript.js') 
-    {
-        var file = fs.readFileSync("./public" + pathname);
-        response.write(file);
-        response.end()
-    }
 
 });
 
@@ -70,22 +78,19 @@ fs.writeFile (chat_database_file, '', { flag: 'wx' }, (err) =>
 
 //////////////////////////////////
 //  CARGA DE DATOS DE USUARIOS  //
-//////////////////////////////////
+/////////////////////////////////
 var users_database_file_name = 'users';
 var users_database_file_extension = '.json';
 var users_database_file = __dirname + '/database/' + users_database_file_name + users_database_file_extension;
 
-var user_addresses = {};
-fs.readFile (users_database_file, 'utf8', (err, data)=>
-{
-    user_addresses = JSON.parse(data);
-});
+let manager = new Manager (users_database_file);
 
 /////////////////////////////////////////////////////////
 //  EVENTOS INPUT-OUTPUT, INTERACCÓN CLIENTE-SERVIDOR  //
 /////////////////////////////////////////////////////////
 
 const io = require ("socket.io")(server);
+
 
 // Información volátil sobre los usuarios.
 var users = [];
@@ -95,8 +100,14 @@ io.on ('connection', (socket) =>
 {
     console.log('Nueva conexión: ' + socket.handshake.address);
     connections.push(socket);
-    console.log(user_addresses);
-    
+
+    socket.on('client-uuid', (data) => 
+    {
+        //console.log(uuid);
+        manager.handleUser(data['uuid']);
+        console.log(manager.allTimeUsers);
+    });
+
     // Esta función actualiza los nombres de usuraio en los clientes (WIP)
     const updateUsernames = () =>
     {
@@ -106,12 +117,16 @@ io.on ('connection', (socket) =>
         });
     };
     
+
+    /*
     /////////////////////////////////////
     //  LÓGICA DE GESTIÓN DE USUARIOS  //
     /////////////////////////////////////
     
     // Aquí se "logean" los usuarios, se almacenan sus datos para que no se vuelva a pedir un username si se refresca la página
     let user_ip = socket.handshake.address;
+
+    ///////////////////////////////
     let user = user_addresses[user_ip];
     
     if (!(user_ip in user_addresses) || !user.logged)
@@ -160,7 +175,6 @@ io.on ('connection', (socket) =>
     }
     
     updateUsernames();
-    
     // Se detecta la desconexión de algun usuario
     socket.on ('disconnect', data =>
     {
@@ -173,6 +187,7 @@ io.on ('connection', (socket) =>
     });
     
     
+
     ////////////////////////////////////////////
     //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
     ////////////////////////////////////////////
@@ -224,4 +239,17 @@ io.on ('connection', (socket) =>
             }
         });
     });
+    */
 });
+
+function parseCookies (request) {
+    var list = {},
+        rc = request.headers.cookie;
+
+    rc && rc.split(';').forEach(function( cookie ) {
+        var parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+
+    return list;
+}

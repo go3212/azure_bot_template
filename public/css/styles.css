@@ -174,17 +174,6 @@ input[type="text"]
     background-color: rgb(245, 245, 245);
 }
 
-#online-users
-{
-    position: relative;
-    white-space: nowrap;
-    text-align: center;
-    padding: 10px;
-    font-size: medium;
-    font-weight: bold;
-    color: #FFF;
-}
-
 .users-list
 { 
     display: grid;
@@ -192,4 +181,65 @@ input[type="text"]
     background: #0056cf;
     border-radius: 10px 10px 0 0;
     box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 75);
+}
+
+.users
+{
+    display: grid;
+    grid-area: people;
+    background: #0056cf;
+    grid-template-columns: 100%;
+    grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    grid-template-areas:
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user";
+    text-align: center;
+    
+}
+
+
+.connected-user
+{
+    position: relative;
+
+
+    border: 1px solid black;
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    background-color: #2f7ff0;
+    
+}
+
+.connected-user div
+{
+    position: absolute;
+    margin: auto;
+
+    margin-left: 5%;
+    bottom: 15%;
+    height: 75%;
+    width: 25%;
+    background-color: #bbb;
+    border-radius: 50%;
+}
+
+.connected-user p
+{
+    text-align: left;
+    margin: auto;
+    margin-left: 20%;
+    font-size: large;
+    color: white;
+
+    left: 50%;
 }

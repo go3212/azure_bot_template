@@ -88,7 +88,7 @@ class Manager
         else
         {
             this.allTimeUsers.set(uuid, {username: "Anonymous", color: "#1906cc"});
-            this.#insertUserToDatabase(uuid);
+            this.#UpdateDatabase(uuid);
         };
     }
 
@@ -97,12 +97,24 @@ class Manager
         this.onlineUsers.delete(uuid);
     }
 
+    edit (event, change, uuid)
+    {
+        // field 
+        let value = this.onlineUsers.get(uuid);
+        if (event == 'username') value.username = change;
+
+        this.onlineUsers.set(uuid, value);
+        this.allTimeUsers.set(uuid, value);
+
+        this.#UpdateDatabase(uuid);
+    }
+
     updateOnlineUsers(data)
     {
         
     };
 
-    #insertUserToDatabase = (uuid) =>
+    #UpdateDatabase = (uuid) =>
     {
         fs.readFile (usersfile, 'utf8', (err, json_data) =>
         {

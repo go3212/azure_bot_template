@@ -16,7 +16,7 @@ $(function ()
     let message = $("#message");
     let send_message = $("#send_message");
     let feedback = $("#feedback");
-    let usersList = $("#users-list");
+    let online_users = $("#online-users");
     let nickName = $("#nickname-input");
     let client_chat = $("#client_chat");
     let server_chat = $("#server_chat");
@@ -56,13 +56,16 @@ $(function ()
     //  LÓGICA DE INTERACCIÓN CON EL SERVIDOR (EVENTOS)  //
     ///////////////////////////////////////////////////////
     
+    // Cambio de nombre de usuario
+    
+
     // Emitir el cambio de nombre de usuario
     nickName.keypress ( e =>
     {
         let keycode = (e.keyCode ? e.keyCode : e.which);
         if(keycode == '13')
         {
-            socket.emit('change_username', { nickName : nickName.val() });
+            socket.emit('change-username', { username : nickName.val(), event : 'username' });
             socket.emit('request_data');
         }
     });
@@ -70,7 +73,7 @@ $(function ()
     //Cuando un usuario se identifica accede a las funciones de chat.
     socket.on('logged', () =>
     {
-        modal.style.display = "none";
+        // modal.style.display = "none";
         // Emitir mensajes al servidor
         message.keypress( e =>
         {  
@@ -129,11 +132,11 @@ $(function ()
         let html = '';
         for(let i = 0; i < data.length; i++)
         {
-            html += `<li class="list-item" style="color: #00000">${data[i]}</li>`;
+            html += `<div class="connected-user" style="color: #00000"><p>${data[i]}</p></div>`;
         }
-        usersList.html(html);
+        online_users.html(html);
     });
-    
+
 });
 
 // Mantener la sala de chat abajo (scroll)

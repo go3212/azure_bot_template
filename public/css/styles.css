@@ -82,8 +82,8 @@ body
 
 .user-nickname
 {
-    box-sizing: border-box;
     font-style: italic;
+    font-size: small;
 }
 
 #client_chat 
@@ -124,12 +124,63 @@ body
     
 }
 
+.message-box
+{
+    position: relative;
+    /*
+    display: grid;
+    
+    grid-template-columns: 85% 15%;
+    grid-template-rows: 20% 80%;
+    grid-template-areas:
+        "name name"
+        "message hour"
+    */
+}
+
+.chat-text-server
+{
+    word-break: break-all;
+    color: white !important;
+    font-size: large;
+    font-family: sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+    padding: 5px 10px 5px 12px;
+    max-width: 90%;
+    text-justify: inter-word;
+    background-color: #00C6FF;
+    border-radius: 10px;
+    text-align-last: justify;
+    overflow: hidden;
+}
+
+.chat-text-client
+{
+    position: relative;
+    word-break: break-all;
+    color: white !important;
+    font-size: large;
+    font-family: sans-serif;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    padding: 5px 10px 5px 12px;
+    max-width: 90%;
+    text-justify: auto;
+    background-color: #0078FF;
+    border-radius: 10px;
+    text-align-last: justify;
+    overflow: hidden;
+}
+
 .empty_div
 {
     visibility: hidden;
     background-color: black;
     width: 100%;
     line-height: normal;
+    padding: 0px 0px 0px 0px !important;
 }
 
 .input
@@ -209,7 +260,6 @@ input[type="text"]
 .connected-user
 {
     position: relative;
-
 
     border: 1px solid black;
 

@@ -57,7 +57,7 @@ var server = http.createServer((request, response) =>
 });
 
 // Inicialización del servidor
-server.listen(4000, '192.168.1.60', () =>
+server.listen(4000, '192.168.1.141', () =>
 {
     console.log('Servidor iniciado');
 });

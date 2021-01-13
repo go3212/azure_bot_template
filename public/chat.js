@@ -4,11 +4,12 @@
 var chatroom = $("#chatroom");
 var uuid = get_uuid();
 var client = undefined;
+var previous_message = {"username" : undefined, "message" : undefined};
 
 $(function () 
 {
     // CONEXION CON EL SERVIDOR, ENVIA SOCKET (identificador) y uuid
-    var socket = io.connect('http://85.51.217.6:4000');
+    var socket = io.connect('http://192.168.1.141:4000');
     socket.emit('first-connection', uuid);
     socket.emit('request_data');
 
@@ -38,12 +39,12 @@ $(function ()
     {
         if (data.uuid != client.uuid) 
         {
-            append_text (server_chat, data);
+            append_message_server (server_chat, data);
             empty_line (client_chat, 2);
         }
         else 
         {
-            append_text (client_chat, data);
+            append_message_client (client_chat, data);
             empty_line (server_chat, 2);
         }
         keepTheChatRoomToTheBottom ();
@@ -84,7 +85,7 @@ $(function ()
                 feedback.html ('');
                 message.val ('');
                 
-                append_text (client_chat, Object.assign(client, {message: data}));
+                append_message_client (client_chat, Object.assign(client, {message: data}));
                 socket.emit('new_message', Object.assign(client, {message: data}));
             }
         });
@@ -108,7 +109,7 @@ $(function ()
     socket.on ('server_new_message', (data) =>
     {
         // Poner el mensaje en la sala de chat
-        append_text (server_chat, data);
+        append_message_server (server_chat, data);
         empty_line (client_chat, 2);
         keepTheChatRoomToTheBottom ();
     });
@@ -147,18 +148,33 @@ const keepTheChatRoomToTheBottom = () =>
 }
 
 // Funciones para implementar elementos en chatbox
-function append_text (element, data)
+function append_message_client (element, data)
 {
-    element.prepend (`
-                    <div>
-                        <div class="box3 sb14">
-                        <p style='color:${data.color}' class="chat-text user-nickname">${data.username}</p>
-                        <p class="chat-text" style="color: rgba(0,0,0,0.87)">${data.message}</p>
-                        </div>
-                    </div>
-                    `);
+    let message = '';
+    message += `<div class="message-box">`;
+    if (data.username != previous_message.username) 
+        message += `<p style='color:${data.color}' class="user-nickname">${data.username}</p>`;
+    message += `<p class="chat-text-client" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+
+    element.prepend(message);
+
+    previous_message['username'] = data.username;
+    previous_message['message'] = data.message;
 };
 
+function append_message_server (element, data)
+{
+    let message = '';
+    message += `<div class="message-box">`;
+    if (data.username != previous_message.username) 
+        message += `<p style='color:${data.color}' class="user-nickname">${data.username}</p>`;
+    message += `<p class="chat-text-server" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+
+    element.prepend(message);
+
+    previous_message['username'] = data.username;
+    previous_message['message'] = data.message;
+};
 
 // Function to get uuid.
 function get_uuid ()

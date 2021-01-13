@@ -82,8 +82,8 @@ body
 
 .user-nickname
 {
-    box-sizing: border-box;
     font-style: italic;
+    font-size: small;
 }
 
 #client_chat 
@@ -124,12 +124,63 @@ body
     
 }
 
+.message-box
+{
+    position: relative;
+    /*
+    display: grid;
+    
+    grid-template-columns: 85% 15%;
+    grid-template-rows: 20% 80%;
+    grid-template-areas:
+        "name name"
+        "message hour"
+    */
+}
+
+.chat-text-server
+{
+    word-break: break-all;
+    color: white !important;
+    font-size: large;
+    font-family: sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+    padding: 5px 10px 5px 12px;
+    max-width: 90%;
+    text-justify: inter-word;
+    background-color: #00C6FF;
+    border-radius: 10px;
+    text-align-last: justify;
+    overflow: hidden;
+}
+
+.chat-text-client
+{
+    position: relative;
+    word-break: break-all;
+    color: white !important;
+    font-size: large;
+    font-family: sans-serif;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    padding: 5px 10px 5px 12px;
+    max-width: 90%;
+    text-justify: auto;
+    background-color: #0078FF;
+    border-radius: 10px;
+    text-align-last: justify;
+    overflow: hidden;
+}
+
 .empty_div
 {
     visibility: hidden;
     background-color: black;
     width: 100%;
     line-height: normal;
+    padding: 0px 0px 0px 0px !important;
 }
 
 .input
@@ -174,17 +225,6 @@ input[type="text"]
     background-color: rgb(245, 245, 245);
 }
 
-#online-users
-{
-    position: relative;
-    white-space: nowrap;
-    text-align: center;
-    padding: 10px;
-    font-size: medium;
-    font-weight: bold;
-    color: #FFF;
-}
-
 .users-list
 { 
     display: grid;
@@ -192,4 +232,64 @@ input[type="text"]
     background: #0056cf;
     border-radius: 10px 10px 0 0;
     box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 75);
+}
+
+.users
+{
+    display: grid;
+    grid-area: people;
+    background: #0056cf;
+    grid-template-columns: 100%;
+    grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    grid-template-areas:
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user"
+        "user";
+    text-align: center;
+    
+}
+
+
+.connected-user
+{
+    position: relative;
+
+    border: 1px solid black;
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    background-color: #2f7ff0;
+    
+}
+
+.connected-user div
+{
+    position: absolute;
+    margin: auto;
+
+    margin-left: 5%;
+    bottom: 15%;
+    height: 75%;
+    width: 25%;
+    background-color: #bbb;
+    border-radius: 50%;
+}
+
+.connected-user p
+{
+    text-align: left;
+    margin: auto;
+    margin-left: 20%;
+    font-size: large;
+    color: white;
+
+    left: 50%;
 }

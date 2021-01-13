@@ -57,7 +57,7 @@ var server = http.createServer((request, response) =>
 });
 
 // Inicialización del servidor
-server.listen(4000, '192.168.1.60', () =>
+server.listen(4000, '192.168.1.141', () =>
 {
     console.log('Servidor iniciado');
 });
@@ -109,6 +109,14 @@ io.on ('connection', (socket) =>
         updateUsernames();
     });
 
+    // Cambio de usuario
+    socket.on('change-username', (data) =>
+    {
+        manager.edit(data.event, data.username, socket.uuid);
+        
+        updateUsernames();
+    });
+
     // Se detecta la desconexión de algun usuario
     socket.on ('disconnect', (data) =>
     {
@@ -117,12 +125,11 @@ io.on ('connection', (socket) =>
         updateUsernames();
     });
     
-    //updateUsernames();
 
     ////////////////////////////////////////////
     //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
     ////////////////////////////////////////////
-    socket.on ('request_data', () => { socket.emit ('request_data', manager.onlineUsers.get(socket.uuid)); });
+    socket.on ('request_data', () => { socket.emit('request_data', manager.onlineUsers.get(socket.uuid)); });
     
     // Se remite a todos los clientes la información de los mensajes entrantes.
     socket.on ('new_message', (data) =>
@@ -134,8 +141,8 @@ io.on ('connection', (socket) =>
             if (err) throw err;
         });
         
-        socket.broadcast.emit ('server_new_message', data);
-        socket.emit ('client_new_message', data) 
+        socket.broadcast.emit('server_new_message', data);
+        socket.emit('client_new_message', data) 
     });
     
     /* Se remite si algún usuario escribe.
@@ -173,8 +180,7 @@ io.on ('connection', (socket) =>
 });
 
 function parseCookies (request) {
-    var list = {},
-        rc = request.headers.cookie;
+    var list = {}, rc = request.headers.cookie;
 
     rc && rc.split(';').forEach(function( cookie ) {
         var parts = cookie.split('=');
@@ -195,8 +201,6 @@ const updateUsernames = () =>
         i += 1;
     });
     console.log(users);
-
-    
     
     return new Promise (resolve =>
     {

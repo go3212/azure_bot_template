@@ -76,7 +76,7 @@ body
     
     grid-template-columns:50% 50%;
     grid-template-areas:
-    "server client";
+    "chat chat";
     
 }
 
@@ -86,14 +86,12 @@ body
     font-size: small;
 }
 
-#client_chat 
+#chat 
 {
     line-height: normal;
-    text-align: right;
-    padding-right: 20px;
-    
+
     position: right;
-    grid-area: client;
+    grid-area: chat;
     min-width: 100%;
     max-width: 100%;
     max-height: 100%;
@@ -104,74 +102,113 @@ body
     flex-direction: column-reverse;
 }
 
-#server_chat 
-{
-    line-height: normal;
-    text-align: left;
-    padding-left: 10px;
-    
-    
-    position: left;
-    grid-area: server;
-    min-width: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    width: 100%;
-    height: 100%;
-    
-    display: flex;
-    flex-direction: column-reverse;
-    
-}
-
-.message-box
+/* Messages */
+[class*="client-message-box"]
 {
     position: relative;
-    /*
+
     display: grid;
+
+    justify-content: right;
+    grid-template-columns: fit-content(42%) 8%;
     
-    grid-template-columns: 85% 15%;
-    grid-template-rows: 20% 80%;
-    grid-template-areas:
-        "name name"
-        "message hour"
-    */
+    padding: 0px 0px 5px 0px;
 }
 
-.chat-text-server
+.client-message-box-with-username
 {
+    grid-template-rows: 20% minmax(1fr, 80%);
+    grid-template-areas:
+        "username username"
+        "message hour"
+}
+
+.client-message-box-no-username
+{
+    grid-template-rows: fit-content(100%);
+    grid-template-areas:
+        "message hour"
+}
+
+[class*="server-message-box"]
+{
+    position: relative;
+
+    display: grid;
+
+    justify-content: left;
+    grid-template-columns: 8% fit-content(42%);
+
+    padding: 0px 0px 3px 0px;
+}
+
+.server-message-box-with-username
+{
+    grid-template-rows: 20% minmax(1fr, 80%);
+    grid-template-areas:
+        "username username"
+        "hour message"
+}
+
+.server-message-box-no-username
+{
+    grid-template-rows: 100%;
+    grid-template-areas:
+        "hour message"
+}
+
+[class*="chat-text"]
+{
+    position: relative;
     word-break: break-all;
     color: white !important;
     font-size: large;
     font-family: sans-serif;
     letter-spacing: 0.5px;
-    position: relative;
     display: inline-block;
-    padding: 5px 10px 5px 12px;
-    max-width: 90%;
-    text-justify: inter-word;
-    background-color: #00C6FF;
-    border-radius: 10px;
-    text-align-last: justify;
+    padding: 5px 10px 5px 10px;
+    max-width: 100%;
+    min-height: 100%;
     overflow: hidden;
 }
 
 .chat-text-client
 {
-    position: relative;
-    word-break: break-all;
-    color: white !important;
-    font-size: large;
-    font-family: sans-serif;
-    letter-spacing: 0.5px;
-    display: inline-block;
-    padding: 5px 10px 5px 12px;
-    max-width: 90%;
-    text-justify: auto;
+    grid-area: message;
+    border-radius: 10px 0px 0px 10px;
     background-color: #0078FF;
-    border-radius: 10px;
-    text-align-last: justify;
-    overflow: hidden;
+}
+
+.chat-text-client-username
+{
+    font-size: small;
+    grid-area: username;
+    border-radius: 10px 10px 0px 0px;
+    background-color: #0078FF;
+}
+
+[class*="chat-text-server"]
+{
+    grid-area: message;
+    background-color: #00C6FF;
+}
+
+.chat-text-server-nubord
+{
+    border-radius: 0px 10px 10px 0px;
+}
+
+.chat-text-server-ubord
+{
+    border-radius: 0px 0px 10px 0px;
+}
+
+.chat-text-server-username
+{
+    font-size: small;
+    grid-area: username;
+    border-radius: 10px 10px 0px 0px;
+    background-color: #00C6FF;
 }
 
 .empty_div

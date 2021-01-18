@@ -19,8 +19,7 @@ $(function ()
     let feedback = $("#feedback");
     let online_users = $("#online-users");
     let nickName = $("#nickname-input");
-    let client_chat = $("#client_chat");
-    let server_chat = $("#server_chat");
+    let chat = $("#chat");
     let data_requested = false;
 
     ///////////////////////////////////////////////////////
@@ -39,13 +38,11 @@ $(function ()
     {
         if (data.uuid != client.uuid) 
         {
-            append_message_server (server_chat, data);
-            empty_line (client_chat, 2);
+            append_message_server (chat, data);
         }
         else 
         {
-            append_message_client (client_chat, data);
-            empty_line (server_chat, 2);
+            append_message_client (chat, data);
         }
         keepTheChatRoomToTheBottom ();
     });
@@ -82,7 +79,7 @@ $(function ()
                 feedback.html ('');
                 message.val ('');
                 
-                append_message_client (client_chat, Object.assign(client, {message: data}));
+                append_message_client (chat, Object.assign(client, {message: data}));
                 socket.emit('new_message', Object.assign(client, {message: data}));
             }
         });
@@ -106,15 +103,13 @@ $(function ()
     socket.on ('server_new_message', (data) =>
     {
         // Poner el mensaje en la sala de chat
-        append_message_server (server_chat, data);
-        empty_line (client_chat, 2);
+        append_message_server (chat, data);
         keepTheChatRoomToTheBottom ();
     });
     
     // When another client sends data
     socket.on ('client_new_message', (data) =>
     {
-        empty_line (server_chat, 2);
         keepTheChatRoomToTheBottom ();          
     });
 
@@ -148,9 +143,8 @@ const keepTheChatRoomToTheBottom = () =>
 function append_message_client (element, data)
 {
     let message = '';
-    message += `<div class="message-box">`;
-    if (data.username != previous_message.username) 
-        message += `<p style='color:${data.color}' class="user-nickname">${data.username}</p>`;
+
+    message += `<div class="client-message-box-no-username">`;
     message += `<p class="chat-text-client" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
 
     element.prepend(message);
@@ -162,10 +156,17 @@ function append_message_client (element, data)
 function append_message_server (element, data)
 {
     let message = '';
-    message += `<div class="message-box">`;
     if (data.username != previous_message.username) 
-        message += `<p style='color:${data.color}' class="user-nickname">${data.username}</p>`;
-    message += `<p class="chat-text-server" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+    {
+        message += `<div class="server-message-box-with-username">`;
+        message += `<p style='color:${data.color}' class="chat-text-server-username">${data.username}</p>`;
+        message += `<p class="chat-text-server-ubord" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+    } 
+    else 
+    {
+        message += `<div class="server-message-box-no-username">`;
+        message += `<p class="chat-text-server-nubord" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+    }
 
     element.prepend(message);
 

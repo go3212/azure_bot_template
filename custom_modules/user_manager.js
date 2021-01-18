@@ -42,6 +42,11 @@ class su extends User
 
 }
 
+/**
+ * @description This class is the default object of the module. It handles all user's data.
+ * @constructor Loads all previous stored data (if any) into a hash map. 
+ * @since 0.0.0
+ */
 class Manager
 {
     constructor(location)
@@ -54,7 +59,11 @@ class Manager
         this.gatherAllTimeUsers();
     };
 
-    // Mirar de mejorar.
+    /**
+     * @summary Gathers stored data from previous sessions and stores it into the allTimeUsers hash-map.
+     * @since 0.0.0
+     * @access public
+     */
     gatherAllTimeUsers()
     {
         let users = {};
@@ -78,6 +87,12 @@ class Manager
         });
     };
 
+    /**
+     * @summary Adds a user into the online hash-map.
+     * @param {string} uuid user-exclusive identificator.
+     * @since 0.0.0
+     * @access public
+     */
     connectUser (uuid)
     {
         // Si existe el usuario -> meterlo a online
@@ -92,16 +107,30 @@ class Manager
         };
     }
 
+    /**
+     * @summary Removes a user from online users hash-map.
+     * @param {string} uuid user-exclusive identificator.
+     * @since 0.0.0
+     * @access public
+     */
     disconnectUser (uuid)
     {
         this.onlineUsers.delete(uuid);
     }
 
-    edit (event, change, uuid)
+    /**
+     * @summary Edits the data at the all time users hash-map for a certain user.
+     * @param {string} field the field to edit in the hash-map.
+     * @param {any} change the new key's value in the hash-map.
+     * @param {string} uuid user-exclusive identificator.
+     * @since 0.0.0
+     * @access public
+     */
+    edit (field, change, uuid)
     {
         // field 
         let value = this.onlineUsers.get(uuid);
-        if (event == 'username') value.username = change;
+        if (field == 'username') value.username = change;
 
         this.onlineUsers.set(uuid, value);
         this.allTimeUsers.set(uuid, value);
@@ -114,6 +143,12 @@ class Manager
         
     };
 
+    /**
+     * @summary It updates the user database when called (user-specific).
+     * @param {string} uuid user-exclusive identificator.
+     * @since 0.0.0
+     * @access private
+     */
     #UpdateDatabase = (uuid) =>
     {
         fs.readFile (usersfile, 'utf8', (err, json_data) =>

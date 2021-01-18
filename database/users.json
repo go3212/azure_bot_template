@@ -37,11 +37,19 @@
         "color": "#1906cc"
     },
     "002785bc-efcc-46f5-b8d1-0857a0971ba4": {
-        "username": "marc sanchez",
+        "username": "Marc",
         "color": "#1906cc"
     },
     "50c259a3-6299-40a8-a23c-96c01ec93ab7": {
         "username": "Anonymous",
+        "color": "#1906cc"
+    },
+    "ffa63921-320e-49fd-9619-3c32c2baab56": {
+        "username": "Fernando",
+        "color": "#1906cc"
+    },
+    "e1d6c866-a586-41f9-9cf7-92f7d32843a0": {
+        "username": "equis",
         "color": "#1906cc"
     }
 }

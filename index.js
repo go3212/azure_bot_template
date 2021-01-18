@@ -57,11 +57,10 @@ server.listen(4000, '192.168.1.141', () =>
     console.log('Servidor iniciado');
 });
 
-//////////////////////////////////
-//  LÓGICA DE LA BASE DE DATOS  //
-//////////////////////////////////
+///////////////////////////
+//  CHAT DATABASE LOGIC  //
+///////////////////////////
 
-// Lógica de la base de datos, se crea un fichero de conversaciones diario.
 var chat_database_file_extension = '.csv';
 var date = ((((new Date()) + '').split(' ').join('_')).split('_GMT', 1)[0]).slice(0,-9);
 var chat_database_file = __dirname + '/database/' + date + chat_database_file_extension;

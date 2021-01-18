@@ -6,19 +6,16 @@ let randomColor = require('randomcolor');
 let Manager = require('./custom_modules/user_manager.js')
 
 
-////////////////////////////////////////////////////////
-// INICIALIZAR SERVIDOR Y ENVIAR DATOS A LOS CLIENTES //
-////////////////////////////////////////////////////////
+////////////////////////////////////////////////
+// INITIALIZIZE SERVER AND ATTEND TO REQUESTS //
+////////////////////////////////////////////////
 
 var server = http.createServer((request, response) =>
 {   
-    // Se separan las peticiones en distintos tipos:
     var pathname = url.parse(request.url).pathname;
 
-    // El CSS
     if(request.headers.accept.split(',')[0] == 'text/css')
     {
-        //console.log(request.headers);
         fs.readFile('./public/css/styles.css', (error, data) =>
         {
             response.writeHeader(200, { 'Content-Type': 'text/css' });
@@ -26,14 +23,12 @@ var server = http.createServer((request, response) =>
             response.end();
         });
     } 
-    // Aquí se envian los scripts necesarios para el funcionamiento correcto del HTML
     else if (pathname == '/chat.js' || pathname == '/modalScript.js') 
     {
         var file = fs.readFileSync("./public" + pathname);
         response.write(file);
         response.end()
     }
-    // EL HTML
     else 
     {
         fs.readFile('./public/index.html', (error, html) =>
@@ -62,11 +57,10 @@ server.listen(4000, '192.168.1.141', () =>
     console.log('Servidor iniciado');
 });
 
-//////////////////////////////////
-//  LÓGICA DE LA BASE DE DATOS  //
-//////////////////////////////////
+///////////////////////////
+//  CHAT DATABASE LOGIC  //
+///////////////////////////
 
-// Lógica de la base de datos, se crea un fichero de conversaciones diario.
 var chat_database_file_extension = '.csv';
 var date = ((((new Date()) + '').split(' ').join('_')).split('_GMT', 1)[0]).slice(0,-9);
 var chat_database_file = __dirname + '/database/' + date + chat_database_file_extension;
@@ -76,18 +70,11 @@ fs.writeFile (chat_database_file, '', { flag: 'wx' }, (err) =>
     if (err) console.log(date + chat_database_file_extension + " file exists");
 });
 
-//////////////////////////////////
-//  CARGA DE DATOS DE USUARIOS  //
-/////////////////////////////////
-var users_database_file_name = 'users';
-var users_database_file_extension = '.json';
-var users_database_file = __dirname + '/database/' + users_database_file_name + users_database_file_extension;
+let manager = new Manager (__dirname + '/database/users.json');
 
-let manager = new Manager (users_database_file);
-
-/////////////////////////////////////////////////////////
-//  EVENTOS INPUT-OUTPUT, INTERACCÓN CLIENTE-SERVIDOR  //
-/////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+//  INPUT-OUTPUT EVENTS, CLIENT-SERVER INTERACTION  //
+//////////////////////////////////////////////////////
 
 const io = require ("socket.io")(server);
 
@@ -95,21 +82,18 @@ io.on ('connection', (socket) =>
 {
     console.log('Nueva conexión: ' + socket.handshake.address);
 
-    /////////////////////////////////////
-    //  LÓGICA DE GESTIÓN DE USUARIOS  //
-    /////////////////////////////////////
+    /////////////////////////////
+    //  USER CONNECTION LOGIC  //
+    /////////////////////////////
     socket.on('first-connection', (data) => 
     {
-        //console.log(uuid);
         socket.uuid = data['uuid'];
         manager.connectUser(socket.uuid);
-        console.log(manager.onlineUsers);
         socket.emit('logged');
 
         updateUsernames();
     });
 
-    // Cambio de usuario
     socket.on('change-username', (data) =>
     {
         manager.edit(data.event, data.username, socket.uuid);
@@ -117,7 +101,6 @@ io.on ('connection', (socket) =>
         updateUsernames();
     });
 
-    // Se detecta la desconexión de algun usuario
     socket.on ('disconnect', (data) =>
     {
         manager.disconnectUser(socket.uuid);
@@ -126,12 +109,11 @@ io.on ('connection', (socket) =>
     });
     
 
-    ////////////////////////////////////////////
-    //  LÓGICA DE EVENTOS SERVIDOR -> CLIENTE //
-    ////////////////////////////////////////////
+    //////////////////////////////
+    //  SERVER EVENTS -> CLIENT //
+    //////////////////////////////
     socket.on ('request_data', () => { socket.emit('request_data', manager.onlineUsers.get(socket.uuid)); });
     
-    // Se remite a todos los clientes la información de los mensajes entrantes.
     socket.on ('new_message', (data) =>
     {
         // Guardar las conversaciones en un archivo.
@@ -145,21 +127,20 @@ io.on ('connection', (socket) =>
         socket.emit('client_new_message', data) 
     });
     
-    /* Se remite si algún usuario escribe.
+    /* If user types, send it to everyone
     socket.on ('typing', data =>
     {
         socket.broadcast.emit('typing', { username: manager.onlineUsers.get(socket.uuid)['username'] })
     });
     */
-    /////////////////////////////////////
-    //   ENVIAR CHAT PREVIO A USUARIO  //
-    /////////////////////////////////////
+    ///////////////////////////////
+    //   SEND CHAT-DATA TO USER  //
+    ///////////////////////////////
     socket.on ('request_chat_story', () =>
     {
         let database = fs.createReadStream (chat_database_file, 'utf8');
         database.on('data', (chunk) => 
         {
-            // Básicamente, el archivo separa las lineas con saltos de linea, los cortamos. Además, siempre hay una linea entera sin elementos. La eliminamos.
             chunk = chunk.split('\n');
             chunk.pop();
             for (item in chunk)
@@ -179,10 +160,17 @@ io.on ('connection', (socket) =>
     });
 });
 
-function parseCookies (request) {
+/**
+ * @summary Gets the cookie field from a request
+ * @param {http.IncomingMessage} request html request.
+ * @return {Object} Cookies list.
+ */
+function parseCookies (request) 
+{
     var list = {}, rc = request.headers.cookie;
 
-    rc && rc.split(';').forEach(function( cookie ) {
+    rc && rc.split(';').forEach(function( cookie ) 
+    {
         var parts = cookie.split('=');
         list[parts.shift().trim()] = decodeURI(parts.join('='));
     });
@@ -190,7 +178,12 @@ function parseCookies (request) {
     return list;
 }
 
-// Esta función actualiza los nombres de usuraio en los clientes (WIP)
+/**
+ * @summary Updates connected user usernames to all online users
+ * @fires 'get users' 
+ * @since 0.0.0
+ * @access private
+ */
 const updateUsernames = () =>
 {
     let users = [];
@@ -200,7 +193,6 @@ const updateUsernames = () =>
         users[i] = value.username;
         i += 1;
     });
-    console.log(users);
     
     return new Promise (resolve =>
     {

@@ -1,6 +1,6 @@
-/////////////////////////////////////////
-//  DECLARACION DE VARIABLES GLOBALES  //
-/////////////////////////////////////////
+////////////////////////////////////
+//  GLOBAL VARIABLES DECLARATION  //
+////////////////////////////////////
 var chatroom = $("#chatroom");
 var uuid = get_uuid();
 var client = undefined;
@@ -57,10 +57,7 @@ $(function ()
     //  LÓGICA DE INTERACCIÓN CON EL SERVIDOR (EVENTOS)  //
     ///////////////////////////////////////////////////////
     
-    // Cambio de nombre de usuario
-    
-
-    // Emitir el cambio de nombre de usuario
+    // Username update emit
     nickName.keypress ( e =>
     {
         let keycode = (e.keyCode ? e.keyCode : e.which);
@@ -71,7 +68,7 @@ $(function ()
         }
     });
 
-    //Cuando un usuario se identifica accede a las funciones de chat.
+    //Logged status grants access to chat functionality
     socket.on('logged', () =>
     {
         // modal.style.display = "none";
@@ -105,7 +102,7 @@ $(function ()
     //    LÓGICA DE RECEPCIÓN DE EVENTOS DEL SERVIDOR    //
     ///////////////////////////////////////////////////////
 
-    // Cuando se recibe un mensaje de otro usuario 
+    // When a message is received
     socket.on ('server_new_message', (data) =>
     {
         // Poner el mensaje en la sala de chat
@@ -114,20 +111,20 @@ $(function ()
         keepTheChatRoomToTheBottom ();
     });
     
-    // Cuando el cliente envia un mensaje.
+    // When another client sends data
     socket.on ('client_new_message', (data) =>
     {
         empty_line (server_chat, 2);
         keepTheChatRoomToTheBottom ();          
     });
 
-    // Si un usuario escribe mostrarlo
+    // If someone is typing
     socket.on ('typing', (data) =>
     {
         feedback.html("<p><i>" + data.username + " is typing a message..." + "</i></p>");
     });
     
-    // Actualizar la lista de usuarios online
+    // Update online users list
     socket.on ('get users', data =>
     {
         let html = '';
@@ -202,7 +199,6 @@ function empty_line (element, n)
 //////////////////
 
 /*
-
 // sending to sender-client only
 socket.emit('message', "this is a test");
 

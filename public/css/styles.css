@@ -76,7 +76,7 @@ body
     
     grid-template-columns:50% 50%;
     grid-template-areas:
-    "server client";
+    "chat chat";
     
 }
 
@@ -86,33 +86,12 @@ body
     font-size: small;
 }
 
-#client_chat 
+#chat 
 {
     line-height: normal;
-    text-align: right;
-    padding-right: 20px;
-    
-    position: right;
-    grid-area: client;
-    min-width: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    width: 100%;
-    height: 100%;
-    
-    display: flex;
-    flex-direction: column-reverse;
-}
 
-#server_chat 
-{
-    line-height: normal;
-    text-align: left;
-    padding-left: 10px;
-    
-    
-    position: left;
-    grid-area: server;
+    position: right;
+    grid-area: chat;
     min-width: 100%;
     max-width: 100%;
     max-height: 100%;
@@ -121,7 +100,6 @@ body
     
     display: flex;
     flex-direction: column-reverse;
-    
 }
 
 /* Messages */
@@ -132,15 +110,14 @@ body
     display: grid;
 
     justify-content: right;
-    grid-template-columns: fit-content(85%) 15%;
-    grid-template-rows: 20% fit-content(80%);
-
+    grid-template-columns: fit-content(42%) 8%;
+    
     padding: 0px 0px 3px 0px;
 }
 
 .client-message-box-with-username
 {
-    grid-template-rows: 20% fit-content(80%);
+    grid-template-rows: 20% minmax(1fr, 80%);
     grid-template-areas:
         "username username"
         "message hour"
@@ -148,7 +125,7 @@ body
 
 .client-message-box-no-username
 {
-    grid-template-rows: 100%;
+    grid-template-rows: fit-content(100%);
     grid-template-areas:
         "message hour"
 }
@@ -160,14 +137,14 @@ body
     display: grid;
 
     justify-content: left;
-    grid-template-columns: 15% fit-content(85%);
+    grid-template-columns: 8% fit-content(42%);
 
     padding: 0px 0px 3px 0px;
 }
 
 .server-message-box-with-username
 {
-    grid-template-rows: 20% fit-content(80%);
+    grid-template-rows: 20% minmax(1fr, 80%);
     grid-template-areas:
         "username username"
         "hour message"
@@ -182,7 +159,6 @@ body
 
 [class*="chat-text"]
 {
-    grid-area: message;
     position: relative;
     word-break: break-all;
     color: white !important;
@@ -192,18 +168,46 @@ body
     display: inline-block;
     padding: 5px 10px 5px 10px;
     max-width: 100%;
+    min-height: 100%;
     overflow: hidden;
 }
 
 .chat-text-client
 {
+    grid-area: message;
     border-radius: 10px 0px 0px 10px;
     background-color: #0078FF;
 }
 
-.chat-text-server
+.chat-text-client-username
+{
+    font-size: small;
+    grid-area: username;
+    border-radius: 10px 10px 0px 0px;
+    background-color: #0078FF;
+}
+
+[class*="chat-text-server"]
+{
+    grid-area: message;
+    background-color: #00C6FF;
+}
+
+.chat-text-server-nubord
 {
     border-radius: 0px 10px 10px 0px;
+}
+
+.chat-text-server-ubord
+{
+    border-radius: 0px 0px 10px 0px;
+}
+
+.chat-text-server-username
+{
+    font-size: small;
+    grid-area: username;
+    border-radius: 10px 10px 0px 0px;
     background-color: #00C6FF;
 }
 

@@ -1,8 +1,13 @@
 # azure_bot_template
-Este reposositorio definira la estructura principal del bot. Se implementaran principalmente los servicios de azure. 
+In this repository you'll find a nodejs application which is a demonstration of a 'user-support' chat. The application has to serve a purpuse: to be embeddable in a website whilst being fast and sustainable.
  
-## Trabajo a realizar
-- [x] Descargar el bot más básico.
+## What is the main goal?
+The main goal is to provide a fast, 'hybrid', embeddable chat application for companies to use in the client-support department. The 'hybrid' part stands for the possibility of implementing a chat-bot which is supervised by a human (when the client really needs human attention).
+
+## Work to do
+- [x] Implement a basic chat application.
+     · [x] Implement a basic user manager.
+     · [x] Make the design better.
 - [ ] Entender como funciona. (echo Bot) \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - [ ] Repasar javascript \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - [ ] Aprender node.js y restify

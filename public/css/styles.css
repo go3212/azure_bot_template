@@ -112,7 +112,7 @@ body
     justify-content: right;
     grid-template-columns: fit-content(42%) 8%;
     
-    padding: 0px 0px 3px 0px;
+    padding: 0px 0px 5px 0px;
 }
 
 .client-message-box-with-username

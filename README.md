@@ -6,13 +6,13 @@ The main goal is to provide a fast, 'hybrid', embeddable chat application for co
 
 ## Work to do
 - [x] Implement a basic chat application.
-     · [x] Implement a basic user manager, with basic authentication.
-     · [x] Update the website design.
-     · [ ] Add a better login functionality.
-     · [ ] Create modules for boilerplate code. 
-     · [ ] Add user to user chat.
-     · [ ] User settings and private conversation.
-     · [ ] Admin mode and bot mode.
+     - [x] Implement a basic user manager, with basic authentication.
+     - [x] Update the website design.
+     - [ ] Add a better login functionality.
+     - [ ] Create modules for boilerplate code. 
+     - [ ] Add user to user chat.
+     - [ ] User settings and private conversation.
+     - [ ] Admin mode and bot mode.
 - [ ] Start with the chat-bot development
 - [ ] Work in progress... 
 

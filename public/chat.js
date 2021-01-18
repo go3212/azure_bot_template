@@ -148,9 +148,11 @@ const keepTheChatRoomToTheBottom = () =>
 function append_message_client (element, data)
 {
     let message = '';
-    message += `<div class="message-box">`;
     if (data.username != previous_message.username) 
-        message += `<p style='color:${data.color}' class="user-nickname">${data.username}</p>`;
+    {
+        message += `<div class="client-message-box-with-username">`;
+        message += `<p style='color:${data.color}' class="chat-text-client-username">${data.username}</p>`;
+    } else message += `<div class="client-message-box-no-username">`;
     message += `<p class="chat-text-client" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
 
     element.prepend(message);
@@ -162,9 +164,11 @@ function append_message_client (element, data)
 function append_message_server (element, data)
 {
     let message = '';
-    message += `<div class="message-box">`;
     if (data.username != previous_message.username) 
-        message += `<p style='color:${data.color}' class="user-nickname">${data.username}</p>`;
+    {
+        message += `<div class="server-message-box-with-username">`;
+        message += `<p style='color:${data.color}' class="chat-text-server-username">${data.username}</p>`;
+    } else message += `<div class="server-message-box-no-username">`;
     message += `<p class="chat-text-server" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
 
     element.prepend(message);

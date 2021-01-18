@@ -124,54 +124,87 @@ body
     
 }
 
-.message-box
+/* Messages */
+[class*="client-message-box"]
 {
     position: relative;
-    /*
+
     display: grid;
-    
-    grid-template-columns: 85% 15%;
-    grid-template-rows: 20% 80%;
-    grid-template-areas:
-        "name name"
-        "message hour"
-    */
+
+    justify-content: right;
+    grid-template-columns: fit-content(85%) 15%;
+    grid-template-rows: 20% fit-content(80%);
+
+    padding: 0px 0px 3px 0px;
 }
 
-.chat-text-server
+.client-message-box-with-username
 {
+    grid-template-rows: 20% fit-content(80%);
+    grid-template-areas:
+        "username username"
+        "message hour"
+}
+
+.client-message-box-no-username
+{
+    grid-template-rows: 100%;
+    grid-template-areas:
+        "message hour"
+}
+
+[class*="server-message-box"]
+{
+    position: relative;
+
+    display: grid;
+
+    justify-content: left;
+    grid-template-columns: 15% fit-content(85%);
+
+    padding: 0px 0px 3px 0px;
+}
+
+.server-message-box-with-username
+{
+    grid-template-rows: 20% fit-content(80%);
+    grid-template-areas:
+        "username username"
+        "hour message"
+}
+
+.server-message-box-no-username
+{
+    grid-template-rows: 100%;
+    grid-template-areas:
+        "hour message"
+}
+
+[class*="chat-text"]
+{
+    grid-area: message;
+    position: relative;
     word-break: break-all;
     color: white !important;
     font-size: large;
     font-family: sans-serif;
     letter-spacing: 0.5px;
-    position: relative;
     display: inline-block;
-    padding: 5px 10px 5px 12px;
-    max-width: 90%;
-    text-justify: inter-word;
-    background-color: #00C6FF;
-    border-radius: 10px;
-    text-align-last: justify;
+    padding: 5px 10px 5px 10px;
+    max-width: 100%;
     overflow: hidden;
 }
 
 .chat-text-client
 {
-    position: relative;
-    word-break: break-all;
-    color: white !important;
-    font-size: large;
-    font-family: sans-serif;
-    letter-spacing: 0.5px;
-    display: inline-block;
-    padding: 5px 10px 5px 12px;
-    max-width: 90%;
-    text-justify: auto;
+    border-radius: 10px 0px 0px 10px;
     background-color: #0078FF;
-    border-radius: 10px;
-    text-align-last: justify;
-    overflow: hidden;
+}
+
+.chat-text-server
+{
+    border-radius: 0px 10px 10px 0px;
+    background-color: #00C6FF;
 }
 
 .empty_div

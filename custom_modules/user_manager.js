@@ -2,45 +2,8 @@ const uuid = require('uuid');
 var fs = require('fs');
 let randomColor = require('randomcolor');
 
+// Holds the users database location when the Manager class is invoked.
 var usersfile;
-
-class User
-{
-    constructor (uuid, nickname)
-    {
-        this.data = {uuid: uuid, nickname: nickname, color: color};
-        this.updateLogging();
-        this.login_details;
-    }
-
-    state = {
-        last_logged: undefined,
-        
-    }
-
-    updateLogging()
-    {
-        var date_data = new Date();
-        this.login_details = 
-        {
-            "date" : {
-                day: date_data.getDate(),
-                month: date_data.getMonth(),
-                year: date_data.getFullYear(),
-            },
-            "time" : {
-                hour: date_data.getHours(),
-                minutes: date_data.getMinutes(),
-                seconds: date_data.getSeconds(),
-            },
-        }
-    }
-}
-
-class su extends User
-{
-
-}
 
 /**
  * @description This class is the default object of the module. It handles all user's data.
@@ -95,7 +58,7 @@ class Manager
      */
     connectUser (uuid)
     {
-        // Si existe el usuario -> meterlo a online
+        // If the user exists, add it to the online-users hash-map
         if (this.allTimeUsers.get(uuid) != undefined)
         {
             this.onlineUsers.set(uuid, this.allTimeUsers.get(uuid));
@@ -175,12 +138,5 @@ class Manager
 
 
 }
-
-class Users 
-{
-
-}
-
-
 
 module.exports = Manager;

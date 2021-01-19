@@ -102,7 +102,7 @@ body
     flex-direction: column-reverse;
 }
 
-/* Messages */
+/* Messages section*/
 [class*="client-message-box"]
 {
     position: relative;
@@ -110,9 +110,10 @@ body
     display: grid;
 
     justify-content: right;
-    grid-template-columns: fit-content(42%) 8%;
+    grid-template-columns: fit-content(40%) 8%;
     
     padding: 0px 0px 5px 0px;
+    margin-right: 5px;
 }
 
 .client-message-box-with-username
@@ -137,9 +138,10 @@ body
     display: grid;
 
     justify-content: left;
-    grid-template-columns: 8% fit-content(42%);
+    grid-template-columns: 8% fit-content(40%);
 
     padding: 0px 0px 3px 0px;
+    margin-left: 5px;
 }
 
 .server-message-box-with-username
@@ -156,6 +158,8 @@ body
     grid-template-areas:
         "hour message"
 }
+
+/* Client chat side*/
 
 [class*="chat-text"]
 {
@@ -187,6 +191,25 @@ body
     background-color: #0078FF;
 }
 
+.chat-hour-client
+{
+    grid-area: hour;
+    border-radius: 0px 10px 10px 0px;
+    background-color: #0078FF;
+}
+.chat-hour-client p
+{
+    font-size: small;
+    position: absolute;
+    color: white;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    bottom: 11.5px;
+    right: 10px;
+}
+
+/* Server chat side*/
+
 [class*="chat-text-server"]
 {
     grid-area: message;
@@ -210,6 +233,35 @@ body
     border-radius: 10px 10px 0px 0px;
     background-color: #00C6FF;
 }
+
+[class*="chat-hour-server"]
+{
+    grid-area: hour;
+    background-color: #00C6FF;
+}
+
+.chat-hour-server-ubord
+{
+    border-radius: 0px 0px 0px 10px;
+}
+
+.chat-hour-server-bord 
+{
+    border-radius: 10px 0px 0px 10px;
+}
+
+[class*="chat-hour-server"] p
+{
+    font-size: small;
+    position: absolute;
+    color: white;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    bottom: 11.5px;
+    left: 10px;
+}
+
+/* Organize! */
 
 .empty_div
 {

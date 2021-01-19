@@ -52,7 +52,7 @@ var server = http.createServer((request, response) =>
 });
 
 // Inicialización del servidor
-server.listen(4000, '192.168.1.141', () =>
+server.listen(4000, '192.168.1.60', () =>
 {
     console.log('Servidor iniciado');
 });
@@ -116,8 +116,11 @@ io.on ('connection', (socket) =>
     
     socket.on ('new_message', (data) =>
     {
+        let date = new Date();
+        data['hours'] = date.getHours();
+        data['minutes'] = date.getMinutes();
         // Guardar las conversaciones en un archivo.
-        let information = data.uuid + ',' + data.username + ',' + data.color + ',' + data.message;
+        let information = data.uuid + ',' + data.username + ',' + data.hours + ',' + data.minutes + ',' + data.color + ',' + data.message;
         fs.appendFile(chat_database_file, information + '\n', (err) =>
         {
             if (err) throw err;
@@ -148,12 +151,12 @@ io.on ('connection', (socket) =>
                 item = chunk[item].split(',');
 
                 let message = [];
-                for (let i = 3; i <= item.length - 1; ++i) 
+                for (let i = 5; i <= item.length - 1; ++i) 
                 {
                     message.push(item[i]);
                 }
-                item[3] = message.join(',');
-                let data = { uuid: item[0], username: item[1], color: item[2], message: item[3] };
+                item[5] = message.join(',');
+                let data = { uuid: item[0], username: item[1], hours: item[2], minutes: item[3], color: item[4], message: item[5] };
                 socket.emit('chat-setup', data);
             }
         });

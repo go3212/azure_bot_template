@@ -1,6 +1,7 @@
 ////////////////////////////////////
 //  GLOBAL VARIABLES DECLARATION  //
 ////////////////////////////////////
+var date = new Date();
 var chatroom = $("#chatroom");
 var uuid = get_uuid();
 var client = undefined;
@@ -9,7 +10,7 @@ var previous_message = {"username" : undefined, "message" : undefined};
 $(function () 
 {
     // CONEXION CON EL SERVIDOR, ENVIA SOCKET (identificador) y uuid
-    var socket = io.connect('http://192.168.1.141:4000');
+    var socket = io.connect('http://192.168.1.60:4000');
     socket.emit('first-connection', uuid);
     socket.emit('request_data');
 
@@ -75,12 +76,17 @@ $(function ()
             let keycode = (e.keyCode ? e.keyCode : e.which);
             if(keycode == '13')
             {
-                let data = message.val();
+                let data = client;
+                data['message'] = message.val();
+                if (date.getHours < 10) data['hours'] = '0' + date.getHours();
+                else data['hours'] = date.getHours();
+                if (date.getMinutes < 10) data['minutes'] = '0' + date.getMinutes();
+                else data['minutes'] = date.getMinutes();
                 feedback.html ('');
                 message.val ('');
                 
-                append_message_client (chat, Object.assign(client, {message: data}));
-                socket.emit('new_message', Object.assign(client, {message: data}));
+                append_message_client (chat, data);
+                socket.emit('new_message', data);
             }
         });
 
@@ -145,7 +151,8 @@ function append_message_client (element, data)
     let message = '';
 
     message += `<div class="client-message-box-no-username">`;
-    message += `<p class="chat-text-client" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+    message += `<p class="chat-text-client" style="color: rgba(0,0,0,0.87)">${data.message}</p>`;
+    message += `<div class="chat-hour-client"><p>${data.hours}:${data.minutes}</p></div></div>`;
 
     element.prepend(message);
 
@@ -160,12 +167,14 @@ function append_message_server (element, data)
     {
         message += `<div class="server-message-box-with-username">`;
         message += `<p style='color:${data.color}' class="chat-text-server-username">${data.username}</p>`;
-        message += `<p class="chat-text-server-ubord" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+        message += `<p class="chat-text-server-ubord" style="color: rgba(0,0,0,0.87)">${data.message}</p>`;
+        message += `<div class="chat-hour-server-ubord"><p>${data.hours}:${data.minutes}</p></div></div>`;
     } 
     else 
     {
         message += `<div class="server-message-box-no-username">`;
-        message += `<p class="chat-text-server-nubord" style="color: rgba(0,0,0,0.87)">${data.message}</p></div>`;
+        message += `<p class="chat-text-server-nubord" style="color: rgba(0,0,0,0.87)">${data.message}</p>`;
+        message += `<div class="chat-hour-server-bord"><p>${data.hours}:${data.minutes}</p></div></div>`;
     }
 
     element.prepend(message);

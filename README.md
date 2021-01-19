@@ -16,8 +16,6 @@ The main goal is to provide a fast, 'hybrid', embeddable chat application for co
 - [ ] Start with the chat-bot development
 - [ ] Work in progress... 
 
-
-
 ## Relevant repositories for development
 [Azure-SDK-for-js](https://github.com/Azure/azure-sdk-for-js)\
 [Botbuilder-js](https://github.com/Microsoft/botbuilder-js)\
